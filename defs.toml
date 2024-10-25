@@ -372,16 +372,16 @@ $\operatorname{lcm}(#1, #2)$ обозначает \href{https://ru.wikipedia.org
 
 [[english.command]]
 name = "DefMEX"
-args = ["c"]
+args = ["c", "k", "x"]
 body = '
-$\operatorname{mex}([c_1, c_2, \ldots, c_k])$ denotes the minimmum excluded (MEX)\footnote{\DefMEXfull} of the collection $c$.
+$\operatorname{mex}(#1)$ denotes the minimmum excluded (MEX)\footnote{\DefMEXfull[#1][#2][#3]} of the collection $#1$.
 '
 
 [[russian.command]]
 name = "DefMEX"
-args = ["c"]
+args = ["c", "k", "x"]
 body = '
-$\operatorname{mex}([c_1, c_2, \ldots, c_k])$ обозначает наименьшее исключенное (MEX)\footnote{\DefMEXfull} набора чисел $c$.
+$\operatorname{mex}(#1)$ обозначает наименьшее исключенное (MEX)\footnote{\DefMEXfull[#1][#2][#3]} набора чисел $#1$.
 '
 
 # DefMEXfull
@@ -417,6 +417,148 @@ args = ["x", "y"]
 body = '
 $#1 \bmod #2$ обозначает остаток от деления $#1$ на $#2$.
 '
+
+# DefTestcases
+
+[[english.command]]
+name = "DefTestcases"
+args = ["t", "10^4"]
+body = '
+Each test contains multiple test cases.
+The first line contains the number of test cases $#1$ ($1 \le #1 \le #2$).
+The description of the test cases follows.
+'
+
+[[russian.command]]
+name = "DefTestcases"
+args = ["t", "10^4"]
+body = '
+Каждый тест состоит из нескольких наборов входных данных.
+В первой строке находится одно целое число $#1$ ($1 \le #1 \le #2$) “--- количество наборов входных данных.
+Далее следует описание наборов входных данных.
+'
+
+# DefLimitSum
+
+[[english.command]]
+name = "DefLimitSum"
+args = ["n", "10^5"]
+body = '
+It is guaranteed that the sum of $#1$ over all test cases does not exceed $#2$.
+'
+
+[[russian.command]]
+name = "DefLimitSum"
+args = ["n", "10^5"]
+body = '
+Гарантируется, что сумма значений $#1$ по всем наборам входных данных не превосходит $#2$.
+'
+
+# DefInteractive
+
+[[english.command]]
+name = "DefInteractive"
+args = []
+body = '
+\textit{This is an interactive problem.}
+'
+
+[[russian.command]]
+name = "DefInteractive"
+args = []
+body = '
+\textit{Это интерактивная задача.}
+'
+
+# DefFlush
+
+[[english.command]]
+name = "DefFlush"
+args = ["$-1$"]
+body = '
+After printing each query do not forget to output the end of line and flush\footnote{To
+flush, use:
+\begin{itemize}
+\item \t{fflush(stdout)} or
+\t{cout.flush()} in C++;
+\item \t{sys.stdout.flush()} in
+Python;
+\item see the documentation for
+other languages.
+\end{itemize}} the output. Otherwise, you will get
+\t{Idleness limit exceeded} verdict.
+
+If, at any interaction step, you read #1 instead of valid data, your solution must exit immediately.
+This means that your solution will reveive \t{Wrong answer} because of an invalid query or any other mistake.
+Failing to exit can result in an arbitrary verdict because your solution will continue to read from a closed stream.
+'
+
+[[russian.command]]
+name = "DefFlush"
+args = ["$-1$"]
+body = '
+После вывода каждого запроса не забудьте вывести перевод строки и сбросить буфер вывода\footnote{Чтобы сбросить буфер вывода, используйте:
+\begin{itemize}
+\item \t{fflush(stdout)} или
+\t{cout.flush()} в C++;
+\item \t{sys.stdout.flush()} в
+Python;
+\item смотрите документацию для других языков.
+\end{itemize}}. В противном случае вы получите вердикт
+\t{Решение <<зависло>>}. 
+
+На любом шаге взаимодействия, если вы считали #1 вместо корректных данных, ваше решение должно немедленно завершиться.
+Это означает, что ваше решение получит вердикт \t{Неправильный ответ} из-за некорректного запроса или любой другой ошибки.
+Если программа не завершится, вы можете получить любой вердикт, так как ваша программа продолжит чтение из закрытого потока.
+'
+
+# DefPrecision
+
+[[english.command]]
+name = "DefPrecision"
+args = ["10^{-9}", "a", "b"]
+body = '
+Your answer is considered correct if its absolute or relative error does not exceed $#1$.
+
+Formally, let your answer be $#2$, and the jury's answer be $#3$.
+Your answer is accepted if and only if $\frac{|#2 - #3|}{\max{(1, |#3|)}} \le #1$.
+'
+
+[[russian.command]]
+name = "DefPrecision"
+args = ["$10^{-9}$", "a", "b"]
+body = '
+Ваш ответ будет считаться правильным, если его абсолютная или относительная ошибка не превосходит $#1$.
+
+Формально, пусть ваш ответ равен $#2$, а ответ жюри равен $#3$.
+Ваш ответ будет зачтен, если и только если $\frac{|#2 - #3|}{\max{(1, |#3|)}} \le #1$.
+'
+
+# DefModuloFraqAnswer
+
+[[english.command]]
+name = "DefModuloFraqAnswer"
+args = ["998\,244\,353", "M", "p", "q", "x"]
+body = '
+Formally, let $#2 = #1$.
+It can be shown that the exact answer can be expressed as an irreducible fraction $\frac{#3}{#4}$,
+where $#3$ and $#4$ are integers and $#4 \not \equiv 0 \pmod{#2}$.
+Output the integer equal to $#3 \cdot #4^{-1} \bmod #2$.
+In other words, output such an integer $#5$ that $0 \le x < #2$ and $#5 \cdot #4 \equiv #3 \pmod{#2}$.
+'
+
+[[russian.command]]
+name = "DefModuloFraqAnswer"
+args = ["998\,244\,353", "M", "p", "q", "x"]
+body = '
+Формально, пусть $#2 = #1$.
+Можно показать, что точный ответ может быть представлен в виде несократимой дроби $\frac{#3}{#4}$,
+где $#3$ и $#4$ "--- целые числа, и $#4 \not \equiv 0 \pmod{#2}$.
+Выведите целое число, равное $#3 \cdot #4^{-1} \bmod #2$.
+Другими словами, выведите такое целое число $#5$, что $0 \le x < #2$ и $#5 \cdot #4 \equiv #3 \pmod{#2}$.
+'
+
+
 
 # Common
 
