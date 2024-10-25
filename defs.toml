@@ -454,6 +454,22 @@ body = '
 Гарантируется, что сумма значений $#1$ по всем наборам входных данных не превосходит $#2$.
 '
 
+# DefSubtask
+
+[[english.command]]
+name = "DefSubtask"
+args = ["easy", "???"]
+body = '
+\textbf{This is the #1 version of the problem. The difference between the versions is that in this version, #2. You can hack only if you solved all versions of this problem.}
+'
+
+[[russian.command]]
+name = "DefSubtask"
+args = ["простая", "???"]
+body = '
+\textbf{Это #1 версия задачи. Отличие между версиями заключается в том, что в этой версии #2. Вы можете делать взломы только в том случае, если решили все версии этой задачи.}
+'
+
 # DefInteractive
 
 [[english.command]]
