@@ -1,3 +1,51 @@
+# DefSubsequence
+
+[[english.command]]
+name = "DefSubsequence"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) element from arbitrary positions.
+'
+
+[[russian.command]]
+name = "DefSubsequence"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ является подпоследовательностью $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) элементов на произвольных позициях.
+'
+
+# DefSubsegment
+
+[[english.command]]
+name = "DefSubsegment"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is a subsegment of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from the beginning and several (possibly, zero or all) elements from the end.
+'
+
+[[russian.command]]
+name = "DefSubsegment"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ является подотрезком последовательности $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) элементов с начала и нескольких (возможно, ни одного или всех) элементов с конца.
+'
+
+# DefSubarray
+
+[[english.command]]
+name = "DefSubarray"
+args = ["a", "b"]
+body = '
+An array $#1$ is a subarray of an array $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from the beginning and several (possibly, zero or all) elements from the end.
+'
+
+[[russian.command]]
+name = "DefSubarray"
+args = ["a", "b"]
+body = '
+Массив $#1$ является подмассивом массива $#2$, если $#1$ может быть получен из $#2$ удалением нескольких (возможно, ни одного или всех) элементов с начала и нескольких (возможно, ни одного или всех) элементов с конца.
+'
+
 # DefSubstring
 
 [[english.command]]
@@ -11,7 +59,79 @@ A string $#1$ is a substring of a string $#2$ if $#1$ can be obtained from $#2$ 
 name = "DefSubstring"
 args = ["a", "b"]
 body = '
-Строка $#1$ является подстрокой $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) символов из начала и нескольких (возможно, ни одного или всех) символов из конца.
+Строка $#1$ является подстрокой строки $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) символов с начала и нескольких (возможно, ни одного или всех) символов с конца.
+'
+
+# DefSubsequenceInd
+
+[[english.command]]
+name = "DefSubsequenceInd"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) element from arbitrary positions.
+Two subsequences are considered different if the sets of \textbf{positions} of the deleted elements are different.
+'
+
+[[russian.command]]
+name = "DefSubsequenceInd"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ является подпоследовательностью $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) элементов на произвольных позициях.
+Две подпоследовательности считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
+'
+
+# DefSubsegmentInd
+
+[[english.command]]
+name = "DefSubsegmentInd"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is a subsegment of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from the beginning and several (possibly, zero or all) elements from the end.
+Two subsequences are considered different if the sets of \textbf{positions} of the deleted elements are different.
+'
+
+[[russian.command]]
+name = "DefSubsegmentInd"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ является подотрезком последовательности $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) элементов с начала и нескольких (возможно, ни одного или всех) элементов с конца.
+Две подпоследовательности считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
+'
+
+# DefSubarrayInd
+
+[[english.command]]
+name = "DefSubarrayInd"
+args = ["a", "b"]
+body = '
+An array $#1$ is a subarray of an array $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from the beginning and several (possibly, zero or all) elements from the end.
+Two subarrays are considered different if the sets of \textbf{positions} of the deleted elements are different.
+'
+
+[[russian.command]]
+name = "DefSubarrayInd"
+args = ["a", "b"]
+body = '
+Массив $#1$ является подмассивом массива $#2$, если $#1$ может быть получен из $#2$ удалением нескольких (возможно, ни одного или всех) элементов с начала и нескольких (возможно, ни одного или всех) элементов с конца.
+Два подмассива считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
+'
+
+# DefSubstringInd
+
+[[english.command]]
+name = "DefSubstringInd"
+args = ["a", "b"]
+body = '
+A string $#1$ is a substring of a string $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) characters from the beginning and several (possibly, zero or all) characters from the end.
+Two substrings are considered different if the sets of \textbf{positions} of the deleted elements are different.
+'
+
+[[russian.command]]
+name = "DefSubstringInd"
+args = ["a", "b"]
+body = '
+Строка $#1$ является подстрокой строки $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) символов с начала и нескольких (возможно, ни одного или всех) символов с конца.
+Две подстроки считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
 '
 
 # DefPermutation
@@ -28,6 +148,144 @@ name = "DefPermutation"
 args = ["n"]
 body = '
 Перестановкой длины $#1$ является массив, состоящий из $#1$ различных целых чисел от $1$ до $#1$ в произвольном порядке. Например, $[2,3,1,5,4]$ "--- перестановка, но $[1,2,2]$ не перестановка ($2$ встречается в массиве дважды) и $[1,3,4]$ тоже не перестановка ($#1=3$, но в массиве встречается $4$).
+'
+
+# DefLexMinStr
+
+[[english.command]]
+name = "DefLexMinStr"
+args = ["a", "b"]
+body = '
+A string $#1$ is lexicographically smaller than a string $#2$ if and only if one of the following holds:
+\begin{itemize}
+\item $#1$ is a prefix of $#2$, but $#1 \ne #2$; or
+\item in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinStr"
+args = ["a", "b"]
+body = '
+Строка $#1$ лексикографически меньше строки $#2$, если и только если выполняется одно из следующего:
+\begin{itemize}
+\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item в первой позиции, где $#1$ и $#2$ различны, в строке $#1$ находится буква, которая встречается в алфавите раньше, чем соответствующая буква в $#2$.
+\end{itemize}
+'
+
+# DefLexMinSeq
+
+[[english.command]]
+name = "DefLexMinSeq"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is lexicographically smaller than a sequence $#2$ if and only if one of the following holds:
+\begin{itemize}
+\item $#1$ is a prefix of $#2$, but $#1 \ne #2$; or
+\item in the first position where $#1$ and $#2$ differ, the sequence $#1$ has a smaller element than the corresponding element in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinSeq"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ лексикографически меньше последовательности $#2$, если и только если выполняется одно из следующего:
+\begin{itemize}
+\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item в первой позиции, где $#1$ и $#2$ различны, в последовательности $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\end{itemize}
+'
+
+# DefLexMinArr
+
+[[english.command]]
+name = "DefLexMinArr"
+args = ["a", "b"]
+body = '
+An array $#1$ is lexicographically smaller than an array $#2$ if and only if one of the following holds:
+\begin{itemize}
+\item $#1$ is a prefix of $#2$, but $#1 \ne #2$; or
+\item in the first position where $#1$ and $#2$ differ, the array $#1$ has a smaller element than the corresponding element in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinArr"
+args = ["a", "b"]
+body = '
+Массив $#1$ лексикографически меньше массива $#2$, если и только если выполняется одно из следующего:
+\begin{itemize}
+\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item в первой позиции, где $#1$ и $#2$ различны, в массиве $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\end{itemize}
+'
+
+# DefLexMinStrEqsz
+
+[[english.command]]
+name = "DefLexMinStrEqsz"
+args = ["a", "b"]
+body = '
+A string $#1$ is lexicographically smaller than a string $#2$ of the same length, if and only if the following holds:
+\begin{itemize}
+\item in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinStrEqsz"
+args = ["a", "b"]
+body = '
+Строка $#1$ лексикографически меньше строки $#2$ такой же длины, если и только если выполняется следующее:
+\begin{itemize}
+\item в первой позиции, где $#1$ и $#2$ различны, в строке $#1$ находится буква, которая встречается в алфавите раньше, чем соответствующая буква в $#2$.
+\end{itemize}
+'
+
+# DefLexMinSeqEqsz
+
+[[english.command]]
+name = "DefLexMinSeqEqsz"
+args = ["a", "b"]
+body = '
+A sequence $#1$ is lexicographically smaller than a sequence $#2$ of the same length if and only if the following holds:
+\begin{itemize}
+\item in the first position where $#1$ and $#2$ differ, the sequence $#1$ has a smaller element than the corresponding element in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinSeqEqsz"
+args = ["a", "b"]
+body = '
+Последовательность $#1$ лексикографически меньше последовательности $#2$ такой же длины, если и только если выполняется следующее:
+\begin{itemize}
+\item в первой позиции, где $#1$ и $#2$ различны, в последовательности $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\end{itemize}
+'
+
+# DefLexMinArrEqsz
+
+[[english.command]]
+name = "DefLexMinArrEqsz"
+args = ["a", "b"]
+body = '
+An array $#1$ is lexicographically smaller than an array $#2$ of the same size if and only if the following holds:
+\begin{itemize}
+\item in the first position where $#1$ and $#2$ differ, the array $#1$ has a smaller element than the corresponding element in $#2$.
+\end{itemize}
+'
+
+[[russian.command]]
+name = "DefLexMinArrEqsz"
+args = ["a", "b"]
+body = '
+Массив $#1$ лексикографически меньше массива $#2$ такого же размера, если и только если выполняется следующее:
+\begin{itemize}
+\item в первой позиции, где $#1$ и $#2$ различны, в массиве $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\end{itemize}
 '
 
 # Common
