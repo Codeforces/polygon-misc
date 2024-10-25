@@ -288,6 +288,136 @@ body = '
 \end{itemize}
 '
 
+# DefBitwiseXOR
+
+[[english.command]]
+name = "DefBitwiseXOR"
+args = ["\oplus"]
+body = '
+$\oplus$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#XOR}{bitwise XOR operation}.
+'
+
+[[russian.command]]
+name = "DefBitwiseXOR"
+args = ["\oplus"]
+body = '
+$\oplus$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_исключающее_ИЛИ}{побитового исключающего ИЛИ}.
+'
+
+# DefBitwiseOR
+
+[[english.command]]
+name = "DefBitwiseOR"
+args = ["|"]
+body = '
+$|$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#OR}{bitwise OR operation}.
+'
+
+[[russian.command]]
+name = "DefBitwiseOR"
+args = ["|"]
+body = '
+$|$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_ИЛИ}{побитового ИЛИ}.
+'
+
+# DefBitwiseAND
+
+[[english.command]]
+name = "DefBitwiseAND"
+args = ["\&"]
+body = '
+$\&$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#AND}{bitwise AND operation}.
+'
+
+[[russian.command]]
+name = "DefBitwiseAND"
+args = ["\&"]
+body = '
+$\&$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_И}{побитового И}.
+'
+
+# DefGCD
+
+[[english.command]]
+name = "DefGCD"
+args = ["x", "y"]
+body = '
+$\gcd(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Greatest_common_divisor}{greatest common divisor (GCD)} of integers $#1$ and $#2$.
+'
+
+[[russian.command]]
+name = "DefGCD"
+args = ["x", "y"]
+body = '
+$\gcd(#1, #2)$ обозначает \href{https://ru.wikipedia.org/wiki/Наибольший_общий_делитель}{наибольший общий делитель (НОД)} чисел $#1$ и $#2$.
+'
+
+# DefLCM
+
+[[english.command]]
+name = "DefLCM"
+args = ["x", "y"]
+body = '
+$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Lowest_common_divisor}{lowest common divisor (LCM)} of integers $#1$ and $#2$.
+'
+
+[[russian.command]]
+name = "DefLCM"
+args = ["x", "y"]
+body = '
+$\operatorname{lcm}(#1, #2)$ обозначает \href{https://ru.wikipedia.org/wiki/Наименьшее_общее_кратное}{наименьшее общее кратное (НОК)} чисел $#1$ и $#2$.
+'
+
+# DefMEX
+
+[[english.command]]
+name = "DefMEX"
+args = ["c"]
+body = '
+$\operatorname{mex}([c_1, c_2, \ldots, c_k])$ denotes the minimmum excluded (MEX)\footnote{\DefMEXfull} of the collection $c$.
+'
+
+[[russian.command]]
+name = "DefMEX"
+args = ["c"]
+body = '
+$\operatorname{mex}([c_1, c_2, \ldots, c_k])$ обозначает наименьшее исключенное (MEX)\footnote{\DefMEXfull} набора чисел $c$.
+'
+
+# DefMEXfull
+
+[[english.command]]
+name = "DefMEXfull"
+args = ["c", "k", "x"]
+body = '
+The minimum excluded (MEX) of a collection of integers $#1_1, #1_2, \ldots, #1_#2$ is defined as
+the smallest non-negative integer $#3$ which does not occur in the collection $#1$.
+'
+
+[[russian.command]]
+name = "DefMEXfull"
+args = ["c", "k", "x"]
+body = '
+Наименьшее исключенное (MEX) набора чисел $#1_1, #1_2, \ldots, #1_#2$ определяется как
+наименьшее неотрицательное целое число $#3$, которое не встречается в наборе чисел $#1$.
+'
+
+# DefMOD
+
+[[english.command]]
+name = "DefMOD"
+args = ["x", "y"]
+body = '
+$#1 \bmod #2$ denotes the remainder from dividing $#1$ by $#2$.
+'
+
+[[russian.command]]
+name = "DefMOD"
+args = ["x", "y"]
+body = '
+$#1 \bmod #2$ обозначает остаток от деления $#1$ на $#2$.
+'
+
 # Common
 
 [[common.command]]
