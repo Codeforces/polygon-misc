@@ -169,7 +169,7 @@ args = ["a", "b"]
 body = '
 Строка $#1$ лексикографически меньше строки $#2$, если и только если выполняется одно из следующего:
 \begin{itemize}
-\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item $#1$~--- префикс $#2$, но $#1 \ne #2$; или
 \item в первой позиции, где $#1$ и $#2$ различны, в строке $#1$ находится буква, которая встречается в алфавите раньше, чем соответствующая буква в $#2$.
 \end{itemize}
 '
@@ -193,7 +193,7 @@ args = ["a", "b"]
 body = '
 Последовательность $#1$ лексикографически меньше последовательности $#2$, если и только если выполняется одно из следующего:
 \begin{itemize}
-\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item $#1$~--- префикс $#2$, но $#1 \ne #2$; или
 \item в первой позиции, где $#1$ и $#2$ различны, в последовательности $#1$ элемент меньше, чем соответствующий элемент в $#2$.
 \end{itemize}
 '
@@ -217,7 +217,7 @@ args = ["a", "b"]
 body = '
 Массив $#1$ лексикографически меньше массива $#2$, если и только если выполняется одно из следующего:
 \begin{itemize}
-\item $#1$ “--- префикс $#2$, но $#1 \ne #2$; или
+\item $#1$~--- префикс $#2$, но $#1 \ne #2$; или
 \item в первой позиции, где $#1$ и $#2$ различны, в массиве $#1$ элемент меньше, чем соответствующий элемент в $#2$.
 \end{itemize}
 '
@@ -292,16 +292,16 @@ body = '
 
 [[english.command]]
 name = "DefBitwiseXOR"
-args = ["\oplus"]
+args = ["\\oplus"]
 body = '
-$\oplus$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#XOR}{bitwise XOR operation}.
+$\oplus$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#XOR}{bitwise XOR operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseXOR"
-args = ["\oplus"]
+args = ["\\oplus"]
 body = '
-$\oplus$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_исключающее_ИЛИ}{побитового исключающего ИЛИ}.
+$\oplus$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_исключающее_ИЛИ}{побитового исключающего ИЛИ}.
 '
 
 # DefBitwiseOR
@@ -310,30 +310,30 @@ $\oplus$ обозначает операцию \href{https://ru.wikipedia.org/wi
 name = "DefBitwiseOR"
 args = ["|"]
 body = '
-$|$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#OR}{bitwise OR operation}.
+$|$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#OR}{bitwise OR operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseOR"
 args = ["|"]
 body = '
-$|$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_ИЛИ}{побитового ИЛИ}.
+$|$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_ИЛИ}{побитового ИЛИ}.
 '
 
 # DefBitwiseAND
 
 [[english.command]]
 name = "DefBitwiseAND"
-args = ["\&"]
+args = ["\\&"]
 body = '
-$\&$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation#AND}{bitwise AND operation}.
+$\&$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#AND}{bitwise AND operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseAND"
-args = ["\&"]
+args = ["\\&"]
 body = '
-$\&$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_И}{побитового И}.
+$\&$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_И}{побитового И}.
 '
 
 # DefGCD
@@ -358,7 +358,7 @@ $\gcd(#1, #2)$ обозначает \href{https://ru.wikipedia.org/wiki/Наиб
 name = "DefLCM"
 args = ["x", "y"]
 body = '
-$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Lowest_common_divisor}{lowest common divisor (LCM)} of integers $#1$ and $#2$.
+$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Least_common_multiple}{lowest common divisor (LCM)} of integers $#1$ and $#2$.
 '
 
 [[russian.command]]
@@ -434,7 +434,7 @@ name = "DefTestcases"
 args = ["t", "10^4"]
 body = '
 Каждый тест состоит из нескольких наборов входных данных.
-В первой строке находится одно целое число $#1$ ($1 \le #1 \le #2$) “--- количество наборов входных данных.
+В первой строке находится одно целое число $#1$ ($1 \le #1 \le #2$)~--- количество наборов входных данных.
 Далее следует описание наборов входных данных.
 '
 
@@ -495,10 +495,8 @@ body = '
 After printing each query do not forget to output the end of line and flush\footnote{To
 flush, use:
 \begin{itemize}
-\item \t{fflush(stdout)} or
-\t{cout.flush()} in C++;
-\item \t{sys.stdout.flush()} in
-Python;
+\item \t{fflush(stdout)} or \t{cout.flush()} in C++;
+\item \t{sys.stdout.flush()} in Python;
 \item see the documentation for
 other languages.
 \end{itemize}} the output. Otherwise, you will get
@@ -515,13 +513,11 @@ args = ["$-1$"]
 body = '
 После вывода каждого запроса не забудьте вывести перевод строки и сбросить буфер вывода\footnote{Чтобы сбросить буфер вывода, используйте:
 \begin{itemize}
-\item \t{fflush(stdout)} или
-\t{cout.flush()} в C++;
-\item \t{sys.stdout.flush()} в
-Python;
+\item \t{fflush(stdout)} или \t{cout.flush()} в C++;
+\item \t{sys.stdout.flush()} в Python;
 \item смотрите документацию для других языков.
 \end{itemize}}. В противном случае вы получите вердикт
-\t{Решение <<зависло>>}. 
+\t{Решение <<зависло>>}.
 
 На любом шаге взаимодействия, если вы считали #1 вместо корректных данных, ваше решение должно немедленно завершиться.
 Это означает, что ваше решение получит вердикт \t{Неправильный ответ} из-за некорректного запроса или любой другой ошибки.
@@ -533,16 +529,16 @@ Python;
 [[english.command]]
 name = "DefPrecision"
 args = ["10^{-9}", "a", "b"]
-body = '
+body = '''
 Your answer is considered correct if its absolute or relative error does not exceed $#1$.
 
 Formally, let your answer be $#2$, and the jury's answer be $#3$.
 Your answer is accepted if and only if $\frac{|#2 - #3|}{\max{(1, |#3|)}} \le #1$.
-'
+'''
 
 [[russian.command]]
 name = "DefPrecision"
-args = ["$10^{-9}$", "a", "b"]
+args = ["10^{-9}", "a", "b"]
 body = '
 Ваш ответ будет считаться правильным, если его абсолютная или относительная ошибка не превосходит $#1$.
 
@@ -554,7 +550,7 @@ body = '
 
 [[english.command]]
 name = "DefModuloFraqAnswer"
-args = ["998\,244\,353", "M", "p", "q", "x"]
+args = ["998\\,244\\,353", "M", "p", "q", "x"]
 body = '
 Formally, let $#2 = #1$.
 It can be shown that the exact answer can be expressed as an irreducible fraction $\frac{#3}{#4}$,
@@ -565,7 +561,7 @@ In other words, output such an integer $#5$ that $0 \le x < #2$ and $#5 \cdot #4
 
 [[russian.command]]
 name = "DefModuloFraqAnswer"
-args = ["998\,244\,353", "M", "p", "q", "x"]
+args = ["998\\,244\\,353", "M", "p", "q", "x"]
 body = '
 Формально, пусть $#2 = #1$.
 Можно показать, что точный ответ может быть представлен в виде несократимой дроби $\frac{#3}{#4}$,
