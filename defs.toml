@@ -546,10 +546,10 @@ body = '
 Ваш ответ будет зачтен, если и только если $\frac{|#2 - #3|}{\max{(1, |#3|)}} \le #1$.
 '
 
-# DefModuloFraqAnswer
+# DefModuloFracAnswer
 
 [[english.command]]
-name = "DefModuloFraqAnswer"
+name = "DefModuloFracAnswer"
 args = ["998\\,244\\,353", "M", "p", "q", "x"]
 body = '
 Formally, let $#2 = #1$.
@@ -560,7 +560,7 @@ In other words, output such an integer $#5$ that $0 \le x < #2$ and $#5 \cdot #4
 '
 
 [[russian.command]]
-name = "DefModuloFraqAnswer"
+name = "DefModuloFracAnswer"
 args = ["998\\,244\\,353", "M", "p", "q", "x"]
 body = '
 Формально, пусть $#2 = #1$.
@@ -570,7 +570,165 @@ body = '
 Другими словами, выведите такое целое число $#5$, что $0 \le x < #2$ и $#5 \cdot #4 \equiv #3 \pmod{#2}$.
 '
 
+# DefTree
 
+[[english.command]]
+name = "DefTree"
+args = []
+body = '
+A tree is a connected graph without cycles.
+'
+
+[[russian.command]]
+name = "DefTree"
+args = []
+body = '
+Деревом называется связный граф без циклов.
+'
+
+# DefRootedTree
+
+[[english.command]]
+name = "DefRootedTree"
+args = []
+body = '
+A rooted tree is a tree where one vertex is special and called the root.
+'
+
+[[russian.command]]
+name = "DefRootedTree"
+args = []
+body = '
+Корневым деревом называется дерево, в котором одна из вершин специальная и называется корнем.
+'
+
+# DefParent
+
+[[english.command]]
+name = "DefParent"
+args = ["v"]
+body = '
+The parent of vertex $#1$ is the first vertex on the simple path from $#1$ to the root. The root has no parent.
+'
+
+[[russian.command]]
+name = "DefParent"
+args = ["v"]
+body = '
+Родителем вершины $#1$ называется первая вершина на простом пути от $#1$ до корня. У корня нет родителя.
+'
+
+# DefAncestor
+
+[[english.command]]
+name = "DefAncestor"
+args = ["v"]
+body = '
+An ancestor of vertex $#1$ is any vertex on the simple path from $#1$ to the root, including the root, but not including $#1$. The root has no ancestors.
+'
+
+[[russian.command]]
+name = "DefAncestor"
+args = ["v"]
+body = '
+Предком вершины $#1$ называется любая вершина на пути от $#1$ до корня, включая корень, но не включая $#1$. У корня нет предков.
+'
+
+# DefChild
+
+[[english.command]]
+name = "DefChild"
+args = ["v", "u"]
+body = '
+A child of vertex $#1$ is any vertex $#2$ for which $#1$ is the parent.
+'
+
+[[russian.command]]
+name = "DefChild"
+args = ["v", "u"]
+body = '
+Ребенком вершины $#1$ называется любая вершина $#2$, для которой $#1$ является родителем.
+'
+
+# DefTreeLeaf
+
+[[english.command]]
+name = "DefTreeLeaf"
+args = []
+body = '
+A leaf is any vertex without children.
+'
+
+[[russian.command]]
+name = "DefTreeLeaf"
+args = []
+body = '
+Листом называется любая вершина, у которой нет детей.
+'
+
+# DefDescendant
+
+[[english.command]]
+name = "DefDescendant"
+args = ["v", "u"]
+body = '
+A descendant of vertex $#1$ is any vertex $#2$ for which $#1$ is an ancestor. No vertex is its own descendant.
+'
+
+[[russian.command]]
+name = "DefDescendant"
+args = ["v", "u"]
+body = '
+Потомком вершины $#1$ называется любая вершина $#2$, для которой $#1$ является предком. Никакая вершина не является своим потомком.
+'
+
+# DefSubtree
+
+[[english.command]]
+name = "DefSubtree"
+args = ["v"]
+body = '
+A subtree of vertex $#1$ is the subgraph of $#1$, all its descendants, and all the edges between them.
+'
+
+[[russian.command]]
+name = "DefSubtree"
+args = ["v"]
+body = '
+Поддеревом вершины $#1$ называется подграф, состоящий из вершины $#1$, всех ее потомком, и всех ребер между ними.
+'
+
+# DefBinaryTree
+
+[[english.command]]
+name = "DefBinaryTree"
+args = []
+body = '
+A binary tree is rooted tree, in which each node has no more than $2$ children.
+'
+
+[[russian.command]]
+name = "DefBinaryTree"
+args = []
+body = '
+Бинарным деревом называется корневое дерево, в котором у каждой вершины не более $2$ детей.
+'
+
+# DefFullBinaryTree
+
+[[english.command]]
+name = "DefFullBinaryTree"
+args = []
+body = '
+A full binary tree is rooted tree, in which each node has $0$ or $2$ children.
+'
+
+[[russian.command]]
+name = "DefFullBinaryTree"
+args = []
+body = '
+Бинарным деревом называется корневое дерево, в котором у каждой вершины $0$ или $2$ детей.
+'
 
 # Common
 
