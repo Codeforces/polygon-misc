@@ -727,7 +727,7 @@ A full binary tree is rooted tree, in which each node has $0$ or $2$ children.
 name = "DefFullBinaryTree"
 args = []
 body = '
-Бинарным деревом называется корневое дерево, в котором у каждой вершины $0$ или $2$ детей.
+Полным бинарным деревом называется корневое дерево, в котором у каждой вершины $0$ или $2$ детей.
 '
 
 # Common
