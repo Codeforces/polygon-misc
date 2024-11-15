@@ -503,7 +503,7 @@ other languages.
 \t{Idleness limit exceeded} verdict.
 
 If, at any interaction step, you read #1 instead of valid data, your solution must exit immediately.
-This means that your solution will reveive \t{Wrong answer} because of an invalid query or any other mistake.
+This means that your solution will receive \t{Wrong answer} because of an invalid query or any other mistake.
 Failing to exit can result in an arbitrary verdict because your solution will continue to read from a closed stream.
 '
 
