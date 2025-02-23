@@ -292,48 +292,48 @@ body = '
 
 [[english.command]]
 name = "DefBitwiseXOR"
-args = ["\\oplus"]
+args = ["\\oplus", "https://en.wikipedia.org/wiki/Bitwise_operation#XOR"]
 body = '
-$\oplus$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#XOR}{bitwise XOR operation}.
+$#1$ denotes the \href{#2}{bitwise XOR operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseXOR"
-args = ["\\oplus"]
+args = ["\\oplus", "https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_исключающее_ИЛИ"]
 body = '
-$\oplus$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_исключающее_ИЛИ}{побитового исключающего ИЛИ}.
+$#1$ обозначает операцию \href{#2}{побитового исключающего ИЛИ}.
 '
 
 # DefBitwiseOR
 
 [[english.command]]
 name = "DefBitwiseOR"
-args = ["|"]
+args = ["|", "https://en.wikipedia.org/wiki/Bitwise_operation#OR"]
 body = '
-$|$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#OR}{bitwise OR operation}.
+$#1$ denotes the \href{#2}{bitwise OR operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseOR"
-args = ["|"]
+args = ["|", "https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_ИЛИ"]
 body = '
-$|$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_ИЛИ}{побитового ИЛИ}.
+$#1$ обозначает операцию \href{#2}{побитового ИЛИ}.
 '
 
 # DefBitwiseAND
 
 [[english.command]]
 name = "DefBitwiseAND"
-args = ["\\&"]
+args = ["\\&", "https://en.wikipedia.org/wiki/Bitwise_operation#AND"]
 body = '
-$\&$ denotes the \href{https://en.wikipedia.org/wiki/Bitwise_operation\#AND}{bitwise AND operation}.
+$#1$ denotes the \href{#2}{bitwise AND operation}.
 '
 
 [[russian.command]]
 name = "DefBitwiseAND"
-args = ["\\&"]
+args = ["\\&", "https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_И"]
 body = '
-$\&$ обозначает операцию \href{https://ru.wikipedia.org/wiki/Битовая_операция\#Побитовое_И}{побитового И}.
+$#1$ обозначает операцию \href{#2}{побитового И}.
 '
 
 # DefGCD
