@@ -156,7 +156,7 @@ body = '
 name = "DefLexMinStr"
 args = ["a", "b"]
 body = '
-A string $#1$ is lexicographically smaller than a string $#2$ if and only if one of the following holds:
+A string $#1$ is lexicographically smaller than string $#2$ if and only if one of the following holds:
 \begin{itemize}
 \item $#1$ is a prefix of $#2$, but $#1 \ne #2$; or
 \item in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
@@ -230,7 +230,7 @@ args = ["a", "b"]
 body = '
 A string $#1$ is lexicographically smaller than a string $#2$ of the same length, if and only if the following holds:
 \begin{itemize}
-\item in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
+\item $#1 \ne #2$, and in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
 \end{itemize}
 '
 
@@ -240,7 +240,7 @@ args = ["a", "b"]
 body = '
 Строка $#1$ лексикографически меньше строки $#2$ такой же длины, если и только если выполняется следующее:
 \begin{itemize}
-\item в первой позиции, где $#1$ и $#2$ различны, в строке $#1$ находится буква, которая встречается в алфавите раньше, чем соответствующая буква в $#2$.
+\item $#1 \ne #2$, и в первой позиции, где $#1$ и $#2$ различны, в строке $#1$ находится буква, которая встречается в алфавите раньше, чем соответствующая буква в $#2$.
 \end{itemize}
 '
 
@@ -252,7 +252,7 @@ args = ["a", "b"]
 body = '
 A sequence $#1$ is lexicographically smaller than a sequence $#2$ of the same length if and only if the following holds:
 \begin{itemize}
-\item in the first position where $#1$ and $#2$ differ, the sequence $#1$ has a smaller element than the corresponding element in $#2$.
+\item $#1 \ne #2$, and in the first position where $#1$ and $#2$ differ, the sequence $#1$ has a smaller element than the corresponding element in $#2$.
 \end{itemize}
 '
 
@@ -262,7 +262,7 @@ args = ["a", "b"]
 body = '
 Последовательность $#1$ лексикографически меньше последовательности $#2$ такой же длины, если и только если выполняется следующее:
 \begin{itemize}
-\item в первой позиции, где $#1$ и $#2$ различны, в последовательности $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\item $#1 \ne #2$, и в первой позиции, где $#1$ и $#2$ различны, в последовательности $#1$ элемент меньше, чем соответствующий элемент в $#2$.
 \end{itemize}
 '
 
@@ -274,7 +274,7 @@ args = ["a", "b"]
 body = '
 An array $#1$ is lexicographically smaller than an array $#2$ of the same size if and only if the following holds:
 \begin{itemize}
-\item in the first position where $#1$ and $#2$ differ, the array $#1$ has a smaller element than the corresponding element in $#2$.
+\item $#1 \ne #2$, and in the first position where $#1$ and $#2$ differ, the array $#1$ has a smaller element than the corresponding element in $#2$.
 \end{itemize}
 '
 
@@ -284,7 +284,7 @@ args = ["a", "b"]
 body = '
 Массив $#1$ лексикографически меньше массива $#2$ такого же размера, если и только если выполняется следующее:
 \begin{itemize}
-\item в первой позиции, где $#1$ и $#2$ различны, в массиве $#1$ элемент меньше, чем соответствующий элемент в $#2$.
+\item $#1 \ne #2$, и в первой позиции, где $#1$ и $#2$ различны, в массиве $#1$ элемент меньше, чем соответствующий элемент в $#2$.
 \end{itemize}
 '
 
