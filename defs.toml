@@ -730,6 +730,42 @@ body = '
 Полным бинарным деревом называется корневое дерево, в котором у каждой вершины $0$ или $2$ детей.
 '
 
+# DefYesNoFull
+
+[[english.command]]
+name = "DefYesNoFull"
+args = ["the answer exists"]
+body = '''
+For each test case, print ``\t{YES}'' if #1, and ``\t{NO}'' otherwise.
+
+\DefYesNoCaseInsensitive
+'''
+
+[[russian.command]]
+name = "DefYesNoFull"
+args = ["ответ существует"]
+body = '''
+Для каждого набора входных данных выведите <<\t{YES}>>, если #1, и <<\t{NO}>> в противном случае.
+
+\DefYesNoCaseInsensitive
+'''
+
+# DefYesNoCaseInsensitive
+
+[[english.command]]
+name = "DefYesNoCaseInsensitive"
+args = []
+body = '''
+You can output the answer in any case (upper or lower). For example, the strings ``\t{yEs}'', ``\t{yes}'', ``\t{Yes}'', and ``\t{YES}'' will be recognized as positive responses.
+'''
+
+[[russian.command]]
+name = "DefYesNoCaseInsensitive"
+args = []
+body = '''
+Вы можете выводить каждую букву в любом регистре (строчную или заглавную). Например, строки <<\t{yEs}>>, <<\t{yes}>>, <<\t{Yes}>> и <<\t{YES}>> будут приняты как положительный ответ.
+'''
+
 # Common
 
 [[common.command]]
