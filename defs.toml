@@ -556,7 +556,7 @@ Formally, let $#2 = #1$.
 It can be shown that the exact answer can be expressed as an irreducible fraction $\frac{#3}{#4}$,
 where $#3$ and $#4$ are integers and $#4 \not \equiv 0 \pmod{#2}$.
 Output the integer equal to $#3 \cdot #4^{-1} \bmod #2$.
-In other words, output such an integer $#5$ that $0 \le x < #2$ and $#5 \cdot #4 \equiv #3 \pmod{#2}$.
+In other words, output such an integer $#5$ that $0 \le #5 < #2$ and $#5 \cdot #4 \equiv #3 \pmod{#2}$.
 '
 
 [[russian.command]]
@@ -567,7 +567,7 @@ body = '
 Можно показать, что точный ответ может быть представлен в виде несократимой дроби $\frac{#3}{#4}$,
 где $#3$ и $#4$ "--- целые числа, и $#4 \not \equiv 0 \pmod{#2}$.
 Выведите целое число, равное $#3 \cdot #4^{-1} \bmod #2$.
-Другими словами, выведите такое целое число $#5$, что $0 \le x < #2$ и $#5 \cdot #4 \equiv #3 \pmod{#2}$.
+Другими словами, выведите такое целое число $#5$, что $0 \le #5 < #2$ и $#5 \cdot #4 \equiv #3 \pmod{#2}$.
 '
 
 # DefTree
@@ -764,6 +764,38 @@ name = "DefYesNoCaseInsensitive"
 args = []
 body = '''
 Вы можете выводить каждую букву в любом регистре (строчную или заглавную). Например, строки <<\t{yEs}>>, <<\t{yes}>>, <<\t{Yes}>> и <<\t{YES}>> будут приняты как положительный ответ.
+'''
+
+# DefFloor
+
+[[english.command]]
+name = "DefFloor"
+args = ["x"]
+body = '''
+$\lfloor #1 \rfloor$ is the $#1$ rounded down, i.~e. the largest integer smaller than or equal to $#1$.
+'''
+
+[[russian.command]]
+name = "DefFloor"
+args = ["x"]
+body = '''
+$\lfloor #1 \rfloor$ означает $#1$ округленное вниз, то есть наибольшее целое число, меньшее или равное $#1$.
+'''
+
+# DefCeil
+
+[[english.command]]
+name = "DefCeil"
+args = ["x"]
+body = '''
+$\lceil #1 \rceil$ is the $#1$ rounded up, i.~e. the smallest integer greater than or equal to $#1$.
+'''
+
+[[russian.command]]
+name = "DefCeil"
+args = ["x"]
+body = '''
+$\lceil #1 \rceil$ означает $#1$ округленное вверх, то есть наименьшее целое число, большее или равное $#1$.
 '''
 
 # Common
