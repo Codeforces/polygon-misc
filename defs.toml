@@ -4,7 +4,7 @@
 name = "DefSubsequence"
 args = ["a", "b"]
 body = '
-A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) element from arbitrary positions.
+A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from arbitrary positions.
 '
 
 [[russian.command]]
@@ -68,7 +68,7 @@ body = '
 name = "DefSubsequenceInd"
 args = ["a", "b"]
 body = '
-A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) element from arbitrary positions.
+A sequence $#1$ is a subsequence of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from arbitrary positions.
 Two subsequences are considered different if the sets of \textbf{positions} of the deleted elements are different.
 '
 
@@ -87,7 +87,7 @@ name = "DefSubsegmentInd"
 args = ["a", "b"]
 body = '
 A sequence $#1$ is a subsegment of a sequence $#2$ if $#1$ can be obtained from $#2$ by the deletion of several (possibly, zero or all) elements from the beginning and several (possibly, zero or all) elements from the end.
-Two subsequences are considered different if the sets of \textbf{positions} of the deleted elements are different.
+Two subsegments are considered different if the sets of \textbf{positions} of the deleted elements are different.
 '
 
 [[russian.command]]
@@ -95,7 +95,7 @@ name = "DefSubsegmentInd"
 args = ["a", "b"]
 body = '
 Последовательность $#1$ является подотрезком последовательности $#2$, если $#1$ может быть получена из $#2$ удалением нескольких (возможно, ни одного или всех) элементов с начала и нескольких (возможно, ни одного или всех) элементов с конца.
-Две подпоследовательности считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
+Два подотрезка считаются различными, если различаются множества \textbf{позиций} удаленных элементов.
 '
 
 # DefSubarrayInd
@@ -156,7 +156,7 @@ body = '
 name = "DefLexMinStr"
 args = ["a", "b"]
 body = '
-A string $#1$ is lexicographically smaller than string $#2$ if and only if one of the following holds:
+A string $#1$ is lexicographically smaller than a string $#2$ if and only if one of the following holds:
 \begin{itemize}
 \item $#1$ is a prefix of $#2$, but $#1 \ne #2$; or
 \item in the first position where $#1$ and $#2$ differ, the string $#1$ has a letter that appears earlier in the alphabet than the corresponding letter in $#2$.
@@ -299,7 +299,7 @@ $#1$ denotes the \href{#2}{bitwise XOR operation}.
 
 [[russian.command]]
 name = "DefBitwiseXOR"
-args = ["\\oplus", "https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_исключающее_ИЛИ"]
+args = ["\\oplus", "https://ru.wikipedia.org/wiki/Битовая_операция#Побитовое_исключающее_ИЛИ_(XOR)"]
 body = '
 $#1$ обозначает операцию \href{#2}{побитового исключающего ИЛИ}.
 '
@@ -358,7 +358,7 @@ $\gcd(#1, #2)$ обозначает \href{https://ru.wikipedia.org/wiki/Наиб
 name = "DefLCM"
 args = ["x", "y"]
 body = '
-$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Least_common_multiple}{lowest common divisor (LCM)} of integers $#1$ and $#2$.
+$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Least_common_multiple}{lowest common multiple (LCM)} of integers $#1$ and $#2$.
 '
 
 [[russian.command]]
@@ -374,7 +374,7 @@ $\operatorname{lcm}(#1, #2)$ обозначает \href{https://ru.wikipedia.org
 name = "DefMEX"
 args = ["c", "k", "x"]
 body = '
-$\operatorname{mex}(#1)$ denotes the minimmum excluded (MEX)\footnote{\DefMEXfull[#1][#2][#3]} of the collection $#1$.
+$\operatorname{mex}(#1)$ denotes the minimum excluded (MEX)\footnote{\DefMEXfull[#1][#2][#3]} of the collection $#1$.
 '
 
 [[russian.command]]
@@ -688,7 +688,7 @@ body = '
 name = "DefSubtree"
 args = ["v"]
 body = '
-A subtree of vertex $#1$ is the subgraph of $#1$, all its descendants, and all the edges between them.
+A subtree of vertex $#1$ is the subgraph consisting of $#1$, all its descendants, and all the edges between them.
 '
 
 [[russian.command]]
