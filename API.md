@@ -5,7 +5,7 @@
 - 2026-05-29: `problem.checkerTests` now returns `runVerdict` and `runComment` when checker test run results are available.
 - 2026-05-29: `problem.validatorTests` now returns `runVerdict` and `runComment` when validator test run results are available.
 - 2026-05-29: Added `problem.renderStatements` to render statement and tutorial HTML/PDF files from the current working copy.
-- 2026-05-29: Added `problem.cautions` to return structured problem cautions, package-readiness issues and cached AI correction tips.
+- 2026-05-29: Added `problem.cautions` to return structured problem cautions, package-readiness issues, latest package warnings and cached AI correction tips.
 - 2026-05-29: `problem.updateInfo` now validates that `timeLimit` is divisible by 50.
 - 2026-05-29: Added documentation for `problem.clearScript`, `problem.previewTests`, `problem.enableTreatPointsFromCheckerAsPercent` and `problem.viewStatementResource`.
 
@@ -741,6 +741,7 @@ Represents structured cautions for the problem.
 - `structure` - list of [Caution](#caution) objects with STRUCTURE category; always present, may be empty
 - `issues` - list of [Caution](#caution) objects with ISSUES category; always present, may be empty
 - `packageReadinessIssues` - list of [PackageReadinessIssue](#packagereadinessissue) objects found by package validation; always present, may be empty
+- `latestPackageWarnings` - list of package verification warning strings from the latest READY package; always present, may be empty
 - `ai` - [AiTips](#aitips) object with cached AI correction tips; always present
 
 ### Caution
