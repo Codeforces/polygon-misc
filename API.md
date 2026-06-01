@@ -2,12 +2,13 @@
 
 ## What's new
 
-- 2026-05-29: `problem.checkerTests` now returns `runVerdict` and `runComment` when checker test run results are available.
-- 2026-05-29: `problem.validatorTests` now returns `runVerdict` and `runComment` when validator test run results are available.
-- 2026-05-29: Added `problem.renderStatements` to render statement and tutorial HTML/PDF files from the current working copy.
-- 2026-05-29: Added `problem.cautions` to return structured problem cautions, package-readiness issues, latest package warnings and cached AI correction tips.
-- 2026-05-29: `problem.updateInfo` now validates that `timeLimit` is divisible by 50.
-- 2026-05-29: Added documentation for `problem.clearScript`, `problem.previewTests`, `problem.enableTreatPointsFromCheckerAsPercent` and `problem.viewStatementResource`.
+- 2026-06-01: Added [`problem.deleteTest`](#problemdeletetest) with all-or-nothing pre-checks and structured failure details.
+- 2026-05-29: [`problem.checkerTests`](#problemcheckertests) now returns `runVerdict` and `runComment` when checker test run results are available.
+- 2026-05-29: [`problem.validatorTests`](#problemvalidatortests) now returns `runVerdict` and `runComment` when validator test run results are available.
+- 2026-05-29: Added [`problem.renderStatements`](#problemrenderstatements) to render statement and tutorial HTML/PDF files from the current working copy.
+- 2026-05-29: Added [`problem.cautions`](#problemcautions) to return structured problem cautions, package-readiness issues, latest package warnings and cached AI correction tips.
+- 2026-05-29: [`problem.updateInfo`](#problemupdateinfo) now validates that `timeLimit` is divisible by 50.
+- 2026-05-29: Added documentation for [`problem.clearScript`](#problemclearscript), [`problem.previewTests`](#problempreviewtests), [`problem.enableTreatPointsFromCheckerAsPercent`](#problemenabletreatpointsfromcheckeraspercent) and [`problem.viewStatementResource`](#problemviewstatementresource).
 
 ## Contents
 
@@ -55,6 +56,7 @@
     - [problem.editSolutionExtraTags](#problemeditsolutionextratags)
     - [problem.saveScript](#problemsavescript)
     - [problem.saveTest](#problemsavetest)
+    - [problem.deleteTest](#problemdeletetest)
     - [problem.setTestGroup](#problemsettestgroup)
     - [problem.enableGroups](#problemenablegroups)
     - [problem.enablePoints](#problemenablepoints)
@@ -85,6 +87,8 @@
     - [ResourceAdvancedProperties](#resourceadvancedproperties)
     - [Solution](#solution)
     - [Test](#test)
+    - [DeleteTestsResult](#deletetestsresult)
+    - [TestDeletionFailure](#testdeletionfailure)
     - [TestPreview](#testpreview)
     - [TestGroup](#testgroup)
     - [Package](#package)
@@ -122,7 +126,7 @@ Most method calls return a JSON-object (if not specified otherwise) with three p
 
 - Status is either "OK" or "FAILED".
 - If status is "FAILED" then comment contains the reason why the request failed. If status is "OK", then there is no comment.
-- If status is "OK" then result contains method-dependent JSON-element which will be described for each method separately. If status is "FAILED", then there is no result. In
+- If status is "OK" then result contains method-dependent JSON-element which will be described for each method separately. If status is "FAILED", then there is no result unless the method explicitly documents a failure result.
 
 # Authorization
 Using Polygon API requires authorization. To authorize, you will need an API key, which can be generated on settings page. Each API key has two parameters: *key* and *secret*. To use the key you must add following parameters to your request.
@@ -442,6 +446,16 @@ Add or edit test. In case of editing, all parameters except for *testset* and *t
 - `testOutputForStatements` - optional - test output for viewing in the statements
 - `verifyInputOutputForStatements` - bool, optional - whether to verify input and output for statements
 
+### problem.deleteTest
+Delete one or more tests from a testset.
+
+The method first checks all requested tests and then deletes them. It returns "OK" only if every requested test was deleted. If at least one requested test can not be deleted during the pre-check, the method returns "FAILED" with a [DeleteTestsResult](#deletetestsresult) object, comment "Some tests can not be deleted." and does not delete any tests. `DELETE_FAILED` may occur after a successful pre-check during the actual deletion; if it occurs, the method returns comment "Some tests failed during deletion; problem state may be partially modified." and some earlier tests may already have been deleted.
+
+#### Parameters:
+- `testset` - testset of the test(s)
+- `testIndex` - index of the test; you can specify multiple parameters with the same name *testIndex* to delete many tests from the same testset
+- `testIndices` - list of test indices, separated by a comma. It is an alternative for *testIndex*; use only one of these two ways
+
 ### problem.setTestGroup
 Set test group for one or more tests. It expects that for specified testset test groups are enabled.
 
@@ -680,6 +694,16 @@ Represents a test for the problem.
 - `inputForStatement` - input for statements (may be absent)
 - `outputForStatement` - output for statements (may be absent)
 - `verifyInputOutputForStatements` - boolean - whether to verify input and output for statements (may be absent)
+
+### DeleteTestsResult
+Represents structured failure details for `problem.deleteTest`.
+- `failures` - list of [TestDeletionFailure](#testdeletionfailure) objects; contains one item for each requested test that can not be deleted
+
+### TestDeletionFailure
+Represents a test that can not be deleted.
+- `index` - requested test index
+- `reason` - DUPLICATE/NOT_FOUND/FREEMARKER_SCRIPT_TEST/DELETE_FAILED
+- `message` - human-readable failure message
 
 ### TestPreview
 Represents preview data for one test.
