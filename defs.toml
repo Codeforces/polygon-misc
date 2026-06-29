@@ -358,7 +358,7 @@ $\gcd(#1, #2)$ обозначает \href{https://ru.wikipedia.org/wiki/Наиб
 name = "DefLCM"
 args = ["x", "y"]
 body = '
-$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Least_common_multiple}{lowest common multiple (LCM)} of integers $#1$ and $#2$.
+$\operatorname{lcm}(#1, #2)$ denotes the \href{https://en.wikipedia.org/wiki/Least_common_multiple}{least common multiple (LCM)} of integers $#1$ and $#2$.
 '
 
 [[russian.command]]
