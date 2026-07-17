@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-07-17: Added `skipDuplicatedTestsValidation` to [`problem.info`](#probleminfo) and [`problem.updateInfo`](#problemupdateinfo).
 - 2026-06-03: Added [`problem.note`](#problemnote) and [`problem.saveNote`](#problemsavenote). The [Problem](#problem) object now returns `note`.
 - 2026-06-01: Added [`problem.deleteTest`](#problemdeletetest) with all-or-nothing pre-checks and structured failure details.
 - 2026-05-29: [`problem.checkerTests`](#problemcheckertests) now returns `runVerdict` and `runComment` when checker test run results are available.
