@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-06-03: Added [`problem.note`](#problemnote) and [`problem.saveNote`](#problemsavenote). The [Problem](#problem) object now returns `note`.
 - 2026-06-01: Added [`problem.deleteTest`](#problemdeletetest) with all-or-nothing pre-checks and structured failure details.
 - 2026-05-29: [`problem.checkerTests`](#problemcheckertests) now returns `runVerdict` and `runComment` when checker test run results are available.
 - 2026-05-29: [`problem.validatorTests`](#problemvalidatortests) now returns `runVerdict` and `runComment` when validator test run results are available.
@@ -21,6 +22,8 @@
   - [Methods for problems](#methods-for-problems)
     - [problem.info](#probleminfo)
     - [problem.updateInfo](#problemupdateinfo)
+    - [problem.note](#problemnote)
+    - [problem.saveNote](#problemsavenote)
     - [problem.updateWorkingCopy](#problemupdateworkingcopy)
     - [problem.discardWorkingCopy](#problemdiscardworkingcopy)
     - [problem.commitChanges](#problemcommitchanges)
@@ -156,7 +159,7 @@ Create a new empty problem. Returns a created [Problem](#problem).
 - `name` - name of problem being created
 
 ## Methods for problems
-To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges` and `problem.buildPackage` require WRITE access. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
+To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
 
 The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource` and `problem.saveStatementResource`.
 
@@ -171,10 +174,26 @@ Update problem info. All parameters are optional.
 - `outputFile` - problem's output file, optional; if specified, must be 1..64 characters, valid text and UTF-8
 - `interactive` - *boolean* - is problem interactive
 - `wellFormed` - *boolean* - is tests well-formed
+- `skipDuplicatedTestsValidation` - *boolean* - whether to skip checking that tests are unique
 - `timeLimit` - problem's time limit in milliseconds, from 250 to 15000, must be divisible by 50
 - `memoryLimit` - problem's memory limit in MB, from 4 to 1024
 
 If both the effective input and output file names are equal ignoring case, the method returns status "FAILED".
+
+### problem.note
+Returns problem note. This note is a problem-level user note and is not related to statement `notes`.
+
+#### Parameters:
+None
+
+#### Returns:
+A string - the problem note, or an empty string if no note is set.
+
+### problem.saveNote
+Saves problem note. This method updates the stored problem note immediately; it does not modify the working copy and does not require `problem.commitChanges`.
+
+#### Parameters:
+- `note` - *string* - the problem note to save, up to 50 characters, valid text and UTF-8. Use an empty string to clear the note.
 
 ### problem.updateWorkingCopy
 Updates working copy.
@@ -600,6 +619,7 @@ Represents a polygon problem.
 - `id` - problem id
 - `owner` - problem owner handle
 - `name` - problem name
+- `note` - problem note set by users with write access (may be absent)
 - `deleted` - boolean - is a problem deleted
 - `favourite` - boolean - is a problem in user's favourites
 - `accessType` - *READ/WRITE/OWNER* - user's access type for the problem
@@ -614,6 +634,7 @@ Represents the problem's general information.
 - `outputFile` - problem's output file
 - `interactive` - *boolean* - is problem interactive
 - `wellFormed` - *boolean* - is tests well-formed
+- `skipDuplicatedTestsValidation` - *boolean* - whether checking that tests are unique is skipped
 - `timeLimit` - problem's time limit in milliseconds
 - `memoryLimit` - problem's memory limit in MB
 
