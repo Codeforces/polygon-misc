@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-07-18: The [Statement](#statement) object returned by [`problem.statements`](#problemstatements) now includes the boolean fields `showInReview` and `showCautionsAndGrammaticalFixes`; [`problem.saveStatement`](#problemsavestatement) accepts them as optional parameters.
 - 2026-07-17: Added `skipDuplicatedTestsValidation` to [`problem.info`](#probleminfo) and [`problem.updateInfo`](#problemupdateinfo).
 - 2026-06-03: Added [`problem.note`](#problemnote) and [`problem.saveNote`](#problemsavenote). The [Problem](#problem) object now returns `note`.
 - 2026-06-01: Added [`problem.deleteTest`](#problemdeletetest) with all-or-nothing pre-checks and structured failure details.
@@ -242,6 +243,8 @@ Update or create a problem's statement. All parameters except for *lang* are opt
 - `interaction` - problem's interaction protocol (only for interactive problems)
 - `notes` - statement notes
 - `tutorial` - problem's tutorial
+- `showInReview` - *boolean* - whether to show the statement in the problem review
+- `showCautionsAndGrammaticalFixes` - *boolean* - whether to show cautions and grammatical fixes for this statement
 
 ### problem.statementResources
 Returns a list of statement resources for the problem.
@@ -656,6 +659,8 @@ Represents a problem's statement.
 - `interaction` - problem's interaction protocol (only for interactive problems)
 - `notes` - statement notes
 - `tutorial` - problem's tutorial
+- `showInReview` - *boolean* - whether to show the statement in the problem review
+- `showCautionsAndGrammaticalFixes` - *boolean* - whether to show cautions and grammatical fixes for this statement
 
 ### RenderStatements
 Represents rendered statements and tutorials for the current working copy.
