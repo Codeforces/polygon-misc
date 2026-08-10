@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-08-10: Added [`problem.accesses`](#problemaccesses) and [`problem.setAccess`](#problemsetaccess) for viewing and changing direct problem access.
 - 2026-07-18: The [Statement](#statement) object returned by [`problem.statements`](#problemstatements) now includes the boolean fields `showInReview` and `showCautionsAndGrammaticalFixes`; [`problem.saveStatement`](#problemsavestatement) accepts them as optional parameters.
 - 2026-07-17: Added `skipDuplicatedTestsValidation` to [`problem.info`](#probleminfo) and [`problem.updateInfo`](#problemupdateinfo).
 - 2026-06-03: Added [`problem.note`](#problemnote) and [`problem.saveNote`](#problemsavenote). The [Problem](#problem) object now returns `note`.
@@ -22,6 +23,8 @@
     - [problems.list](#problemslist)
     - [problem.create](#problemcreate)
   - [Methods for problems](#methods-for-problems)
+    - [problem.accesses](#problemaccesses)
+    - [problem.setAccess](#problemsetaccess)
     - [problem.info](#probleminfo)
     - [problem.updateInfo](#problemupdateinfo)
     - [problem.note](#problemnote)
@@ -82,6 +85,7 @@
     - [contest.problems](#contestproblems)
 - [Return objects](#return-objects)
     - [Problem](#problem)
+    - [ProblemAccess](#problemaccess)
     - [ProblemInfo](#probleminfo-1)
     - [CommitResult](#commitresult)
     - [Statement](#statement)
@@ -161,9 +165,61 @@ Create a new empty problem. Returns a created [Problem](#problem).
 - `name` - name of problem being created
 
 ## Methods for problems
-To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
+To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
 
 The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource` and `problem.saveStatementResource`.
+
+### problem.accesses
+Returns the problem's direct access-control entries. Both users and user groups are returned; groups are not expanded into their members. The method does not calculate each user's effective access.
+
+The method requires effective WRITE or OWNER access and is not available to translators. Access received through a user group is sufficient for this read-only method. The access list is stored immediately at problem level and is not part of the working copy.
+
+#### Parameters:
+None besides the common `problemId` and optional `pin` parameters.
+
+#### Returns:
+A list of [ProblemAccess](#problemaccess) objects sorted by `login` using case-sensitive string ordering.
+
+For sample and example problems, only the owner entry is returned. Automatically created per-user READ entries of sample problems and the anonymous READ entry of example problems are intentionally omitted.
+
+Example response:
+
+```json
+{
+  "status": "OK",
+  "result": [
+    {"login": "@editors", "accessType": "WRITE"},
+    {"login": "alice", "accessType": "READ"},
+    {"login": "owner", "accessType": "OWNER"}
+  ]
+}
+```
+
+### problem.setAccess
+Idempotently sets one user's direct access to the problem. Changes take effect immediately: repository permissions and the problem modification time are updated, and `problem.commitChanges` is not required.
+
+The method requires direct WRITE or OWNER access and is not available to translators. Effective WRITE or OWNER access received only through a user group is insufficient. Administrators may use the method.
+
+#### Parameters:
+- `login` - *string* - exact login of an existing user. User-group logins beginning with `@` are not supported by this method.
+- `accessType` - *READ/WRITE/NONE* - required direct access state. `NONE` removes the user's direct access entry.
+
+#### Behavior:
+- `READ` and `WRITE` create a direct entry or change its type. `NONE` removes only the direct entry; access received through a user group remains effective.
+- Repeating the already stored direct state is a successful no-op. It does not rewrite the entry, update permissions or modification time, send email, or consume this method's change rate limit.
+- `OWNER` cannot be assigned. A direct owner cannot be downgraded or removed. A real `READ` or `WRITE` change is also rejected while the target user's effective access is OWNER.
+- The caller may change or remove their own non-OWNER direct access. Consequently, a successful request can remove the caller's access to the problem.
+- On a real `READ`/`WRITE` type change, the existing `receiveEmails` setting is preserved while reviewer, supervisor and translator roles are cleared. These role fields are not exposed by this API.
+- Every real change sends one existing Polygon access notification to the target user. At most 60 real changes per minute are allowed for each calling user.
+- Access to sample and example problems cannot be changed by this method. The sample restriction is intentionally stricter than the web access-management page.
+
+A successful response has status `OK` and no `result` field:
+
+```json
+{"status":"OK"}
+```
+
+The method returns HTTP 400 with status `FAILED` for an unknown user, an unsupported user-group login or `accessType`, insufficient direct access, an attempt to change ownership, a sample or example problem, an exceeded change rate limit, or an invalid required pin.
 
 ### problem.info
 Returns a [ProblemInfo](#probleminfo) object.
@@ -631,6 +687,13 @@ Represents a polygon problem.
 - `workingCopyRevision` - current working copy revision (may be absent)
 - `latestPackage` - latest revision with package available (may be absent)
 - `modified` - is the problem modified (does the working copy have uncommitted modifications)
+
+### ProblemAccess
+Represents one direct problem access-control entry returned by `problem.accesses`.
+- `login` - user login, or a user-group name prefixed with `@`
+- `accessType` - *READ/WRITE/OWNER* - direct access type assigned to this user or group
+
+This object represents a stored direct entry, not a user's computed effective access. Reviewer, supervisor, translator and email-notification flags are intentionally not returned.
 
 ### ProblemInfo
 Represents the problem's general information.
