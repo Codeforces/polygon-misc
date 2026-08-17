@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-08-17: Added [`problem.materials`](#problemmaterials) and [`problem.setMaterial`](#problemsetmaterial) for viewing and changing publishable problem materials in the current working copy.
 - 2026-08-10: Added [`problem.accesses`](#problemaccesses) and [`problem.setAccess`](#problemsetaccess) for viewing and changing direct problem access.
 - 2026-07-18: The [Statement](#statement) object returned by [`problem.statements`](#problemstatements) now includes the boolean fields `showInReview` and `showCautionsAndGrammaticalFixes`; [`problem.saveStatement`](#problemsavestatement) accepts them as optional parameters.
 - 2026-07-17: Added `skipDuplicatedTestsValidation` to [`problem.info`](#probleminfo) and [`problem.updateInfo`](#problemupdateinfo).
@@ -77,6 +78,8 @@
     - [problem.saveGeneralDescription](#problemsavegeneraldescription)
     - [problem.viewGeneralTutorial](#problemviewgeneraltutorial)
     - [problem.saveGeneralTutorial](#problemsavegeneraltutorial)
+    - [problem.materials](#problemmaterials)
+    - [problem.setMaterial](#problemsetmaterial)
     - [problem.packages](#problempackages)
     - [problem.package](#problempackage)
     - [problem.buildPackage](#problembuildpackage)
@@ -100,6 +103,9 @@
     - [TestDeletionFailure](#testdeletionfailure)
     - [TestPreview](#testpreview)
     - [TestGroup](#testgroup)
+    - [Material](#material)
+    - [MaterialItem](#materialitem)
+    - [MaterialTest](#materialtest)
     - [Package](#package)
     - [ValidatorTest](#validatortest)
     - [CheckerTest](#checkertest)
@@ -630,6 +636,51 @@ Saves problem general tutorial.
 #### Parameters:
 - `tutorial` - *string* - the problem general tutorial to save. The tutorial may be empty.
 
+### problem.materials
+Returns the publishable material configurations from the current working copy. The result is sorted by material `name` using case-sensitive string ordering. The response is not paginated and may be large.
+
+The method requires READ access, is not available to translators and rejects a working copy with conflicts. It returns stored legacy configurations without applying the stricter validation used by `problem.setMaterial`; consequently, a returned material can contain an empty item or a reference that has become invalid.
+
+#### Parameters:
+None besides the common `problemId` and optional `pin` parameters.
+
+#### Returns:
+A list of [Material](#material) objects. An empty list is returned when the problem has no materials.
+
+### problem.setMaterial
+Idempotently creates, fully replaces, renames or removes one publishable material in the current working copy. The method requires READ access, is not available to translators and rejects a working copy with conflicts. It does not commit the working copy; call `problem.commitChanges` separately to create a revision.
+
+Use an HTTP POST request and send the parameters in the request body. In particular, do not put `items` into a query string.
+
+#### Parameters:
+- `name` - *string* - required case-sensitive material name after saving, or the material to remove; must be a valid filename from 1 to 40 characters.
+- `originalName` - *string, optional* - previous case-sensitive material name for an atomic rename; when non-empty, it must be a valid filename from 1 to 40 characters. An empty value is treated as absent.
+- `publishStrategy` - *NONE/WITH_TUTORIAL/WITH_STATEMENT* - required when saving. `NONE` keeps the material but disables its publication; it does not remove the material.
+- `items` - *string* - required when saving; a non-empty JSON array of [MaterialItem](#materialitem) objects, at most 262144 characters long.
+- `remove` - *boolean, optional* - `true` removes `name`; `false` or an empty value saves it. Only the lowercase values `true` and `false` are accepted.
+
+#### Behavior:
+- Without `originalName`, the method replaces the material named `name`, or creates it if it does not exist.
+- With `originalName`, the method replaces that material and renames it to `name`. The destination must not be occupied by a different material.
+- Repeating an already completed rename is successful when the material named by `originalName` is absent, `name` already exists and its complete configuration already matches the submitted one. If the destination differs or neither material exists, the request fails without changing either material.
+- With `remove=true`, removing an absent material is a successful no-op. Non-empty `originalName`, `publishStrategy` and `items` are forbidden in a removal request; empty values are treated as absent.
+- Repeating a request that already produced the requested state is a successful no-op and does not rewrite the materials directory.
+- Material names, referenced filenames, solution names and testset names are compared exactly and case-sensitively. Material names are not normalized: forbidden filename characters and surrounding whitespace cause validation errors.
+
+The input must be standard JSON: comments, single-quoted strings and unquoted names or values are rejected. The JSON schema is strict: unknown fields are rejected. Each item must have `type` and exactly one compatible array, `tests` or `names`. Each test selector must have a non-empty `testset` and exactly one mode: an existing integer `index` from 1 through Polygon's current maximum test index (currently 1000), `all=true`, or `asInput=true`. The optional booleans `all` and `asInput` default to `false`. An `all=true` selector requires the testset to contain at least one test. `asInput=true` is accepted only in `TEST_ANSWERS` and requires an effective non-empty `TEST_INPUTS` selection for the same testset in this material. Every referenced test, file and solution must exist when the material is saved, and the material as a whole must contain at least one effective item.
+
+A legacy material with an invalid reference can still be returned by `problem.materials`, but it cannot be replaced or renamed through this method until the submitted configuration is corrected. A real change rewrites the complete stored material list; fields unknown to this Polygon version can therefore be lost from every material file. A no-op does not perform this rewrite.
+
+At most 60 `problem.setMaterial` attempts per minute are allowed for each calling user, in addition to the common API rate limit. Invalid and no-op calls that pass the common problem checks also consume this method-specific limit.
+
+A successful response has status `OK` and no `result` field:
+
+```json
+{"status":"OK"}
+```
+
+The method returns HTTP 400 with status `FAILED` for invalid parameters or JSON, missing referenced objects, a rename collision or stale rename request, conflicts, an invalid required pin, or an exceeded rate limit.
+
 ### problem.packages
 Returns a list of [*Package*](#package) objects - list all packages available for the problem.
 
@@ -818,6 +869,29 @@ Represents a test group in testset.
 - `pointsPolicy` - test group points policy, COMPLETE_GROUP for the complete group points policy, EACH_TEST for the each test points policy
 - `feedbackPolicy` - test group feedback policy, COMPLETE for the complete feedback policy, ICPC for the first error feedback policy, POINTS for the only points feedback policy, NONE for no feedback policy.
 - `dependencies` - list of group names from which this group depends on (may be empty)
+
+### Material
+Represents one publishable material configuration in the current working copy.
+- `name` - case-sensitive material name
+- `publishStrategy` - *NONE/WITH_TUTORIAL/WITH_STATEMENT* - publication strategy
+- `items` - list of [MaterialItem](#materialitem) objects
+
+### MaterialItem
+Represents one group of files or tests included in a material.
+- `type` - *TEST_INPUTS/TEST_ANSWERS/RESOURCE_FILES/SOURCE_FILES/AUX_FILES/SOLUTIONS* - item type
+- `tests` - list of [MaterialTest](#materialtest) objects; present only for `TEST_INPUTS` and `TEST_ANSWERS`
+- `names` - list of case-sensitive file or solution names; present only for `RESOURCE_FILES`, `SOURCE_FILES`, `AUX_FILES` and `SOLUTIONS`
+
+An individual `tests` or `names` list may be empty for compatibility with materials created by the web editor. When saving through `problem.setMaterial`, at least one item in the complete material must be effective and non-empty.
+
+### MaterialTest
+Represents one test selection inside a `TEST_INPUTS` or `TEST_ANSWERS` material item.
+- `testset` - case-sensitive testset name
+- `index` - selected test index; present only for an individual-test selection
+- `all` - *boolean* - select all tests from the testset
+- `asInput` - *boolean* - for `TEST_ANSWERS`, reuse the selected input files for this testset as answer files
+
+Exactly one selection mode must be effective: `index`, `all=true`, or `asInput=true`. On input to `problem.setMaterial`, omitted `all` and `asInput` fields default to `false`, and `index` may be omitted or `null` for the other two modes.
 
 ### Package
 Represents a package.
