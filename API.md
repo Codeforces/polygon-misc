@@ -2,6 +2,8 @@
 
 ## What's new
 
+- 2026-08-28: [`problem.saveValidatorTest`](#problemsavevalidatortest) and [`problem.saveCheckerTest`](#problemsavecheckertest) now normalize line breaks in passed text parameters to `CRLF` without adding a trailing EOL, treat EOL-equivalent values as duplicates, and clear the previous run result after every successful save.
+- 2026-08-24: [`problem.saveStatement`](#problemsavestatement) now rejects a `name` containing a line break (`CR`, `LF`, `U+2028` or `U+2029`) instead of silently storing a multiline problem name.
 - 2026-08-17: Added [`problem.materials`](#problemmaterials) and [`problem.setMaterial`](#problemsetmaterial) for viewing and changing publishable problem materials in the current working copy.
 - 2026-08-10: Added [`problem.accesses`](#problemaccesses) and [`problem.setAccess`](#problemsetaccess) for viewing and changing direct problem access.
 - 2026-07-18: The [Statement](#statement) object returned by [`problem.statements`](#problemstatements) now includes the boolean fields `showInReview` and `showCautionsAndGrammaticalFixes`; [`problem.saveStatement`](#problemsavestatement) accepts them as optional parameters.
@@ -297,7 +299,7 @@ Update or create a problem's statement. All parameters except for *lang* are opt
 #### Parameters:
 - `lang` (required) - statement's language
 - `encoding` - statement's encoding
-- `name` - problem's name in statement's language
+- `name` - problem's name in statement's language, a single line: a value containing `CR`, `LF`, `U+2028` or `U+2029` is rejected
 - `legend` - statement legend/main statement text
 - `input` - problem's input format
 - `output` - problem's output format
@@ -357,7 +359,7 @@ None
 A list of [*ValidatorTest*](#validatortest) objects.
 
 ### problem.saveValidatorTest
-Add or edit validator test. In case of editing, all parameters except for *testIndex* are optional. In case of adding, all parameters except for *testIndex*, *testInput* and *testVerdict* are optional.
+Add or edit validator test. Line breaks in passed *testInput* are normalized to `CRLF` without adding a trailing EOL, and EOL-equivalent inputs are equal for duplicate checks. Every successful save clears the previous run result. In case of editing, all parameters except for *testIndex* are optional. In case of adding, all parameters except for *testIndex*, *testInput* and *testVerdict* are optional.
 
 #### Parameters:
 - `checkExisting` - boolean, optional - if *true*, only adding validator's test is allowed
@@ -377,7 +379,7 @@ None
 A list of [*CheckerTest*](#checkertest) objects.
 
 ### problem.saveCheckerTest
-Adds or edits checker test. In case of editing, all parameters except for *testIndex* are optional. In case of adding, all parameters except for *testIndex*, *testInput*, *testAnswer*, *testOutput* and *testVerdict* are optional.
+Adds or edits checker test. Line breaks in passed *testInput*, *testOutput* and *testAnswer* are normalized to `CRLF` without adding a trailing EOL, and EOL-equivalent values are equal for duplicate checks. Every successful save clears the previous run result. In case of editing, all parameters except for *testIndex* are optional. In case of adding, all parameters except for *testIndex*, *testInput*, *testAnswer*, *testOutput* and *testVerdict* are optional.
 
 #### Parameters:
 - `checkExisting` - boolean, optional - if *true*, only adding checker test is allowed
