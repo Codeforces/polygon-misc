@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.addIssueComment`](#problemaddissuecomment) for reading, creating and commenting problem issues, including closing, reopening, changing type and reassigning them.
 - 2026-08-28: [`problem.saveValidatorTest`](#problemsavevalidatortest) and [`problem.saveCheckerTest`](#problemsavecheckertest) now normalize line breaks in passed text parameters to `CRLF` without adding a trailing EOL, treat EOL-equivalent values as duplicates, and clear the previous run result after every successful save.
 - 2026-08-24: [`problem.saveStatement`](#problemsavestatement) now rejects a `name` containing a line break (`CR`, `LF`, `U+2028` or `U+2029`) instead of silently storing a multiline problem name.
 - 2026-08-17: Added [`problem.materials`](#problemmaterials) and [`problem.setMaterial`](#problemsetmaterial) for viewing and changing publishable problem materials in the current working copy.
@@ -86,6 +87,9 @@
     - [problem.package](#problempackage)
     - [problem.buildPackage](#problembuildpackage)
     - [problem.cautions](#problemcautions)
+    - [problem.issues](#problemissues)
+    - [problem.addIssue](#problemaddissue)
+    - [problem.addIssueComment](#problemaddissuecomment)
   - [Contest methods](#contest-methods)
     - [contest.problems](#contestproblems)
 - [Return objects](#return-objects)
@@ -117,6 +121,8 @@
     - [AiTips](#aitips)
     - [StatementAiTip](#statementaitip)
     - [SourceAiTip](#sourceaitip)
+    - [Issue](#issue)
+    - [IssueComment](#issuecomment)
 
 # How to download a problem or contest
 Use HTTP POST-requests:
@@ -173,9 +179,9 @@ Create a new empty problem. Returns a created [Problem](#problem).
 - `name` - name of problem being created
 
 ## Methods for problems
-To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
+To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.addIssueComment` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
 
-The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource` and `problem.saveStatementResource`.
+The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.issues`, `problem.addIssue` and `problem.addIssueComment`.
 
 ### problem.accesses
 Returns the problem's direct access-control entries. Both users and user groups are returned; groups are not expanded into their members. The method does not calculate each user's effective access.
@@ -214,6 +220,7 @@ The method requires direct WRITE or OWNER access and is not available to transla
 
 #### Behavior:
 - `READ` and `WRITE` create a direct entry or change its type. `NONE` removes only the direct entry; access received through a user group remains effective.
+- Removing the last effective access of the `codeforces` account is subject to Codeforces protection checks when enabled. If removal is prohibited or the status cannot be verified, the method returns `FAILED` with the reason and retains the direct entry.
 - Repeating the already stored direct state is a successful no-op. It does not rewrite the entry, update permissions or modification time, send email, or consume this method's change rate limit.
 - `OWNER` cannot be assigned. A direct owner cannot be downgraded or removed. A real `READ` or `WRITE` change is also rejected while the target user's effective access is OWNER.
 - The caller may change or remove their own non-OWNER direct access. Consequently, a successful request can remove the caller's access to the problem.
@@ -227,7 +234,7 @@ A successful response has status `OK` and no `result` field:
 {"status":"OK"}
 ```
 
-The method returns HTTP 400 with status `FAILED` for an unknown user, an unsupported user-group login or `accessType`, insufficient direct access, an attempt to change ownership, a sample or example problem, an exceeded change rate limit, or an invalid required pin.
+The method returns HTTP 400 with status `FAILED` for an unknown user, an unsupported user-group login or `accessType`, insufficient direct access, an attempt to change ownership, a sample or example problem, an exceeded change rate limit, an invalid required pin, or an access removal rejected by the Codeforces protection check.
 
 ### problem.info
 Returns a [ProblemInfo](#probleminfo) object.
@@ -719,6 +726,82 @@ None
 #### Returns:
 A [ProblemCautions](#problemcautions-1) object.
 
+### problem.issues
+Returns all issues of the problem with their comments. Issues are stored at problem level and are not part of the working copy.
+
+The method requires READ access and is available to translators.
+
+#### Parameters:
+None besides the common `problemId` and optional `pin` parameters.
+
+#### Returns:
+A list of [Issue](#issue) objects sorted by `modificationTimeSeconds` in descending order. Times have one-second precision, so the order of issues or comments with equal times is not guaranteed; when polling for changes, compare the returned data rather than only the times.
+
+Example response:
+
+```json
+{
+  "status": "OK",
+  "result": [
+    {
+      "id": 1234,
+      "type": "BUG",
+      "status": "CLOSED",
+      "author": "alice",
+      "assignee": "bob",
+      "html": "<div class='markup'><p>Test 5 is invalid</p>\n</div>",
+      "creationTimeSeconds": 1790000000,
+      "modificationTimeSeconds": 1790003600,
+      "comments": [
+        {
+          "author": "bob",
+          "html": "<div class='markup'><p>Fixed in revision 12</p>\n</div>",
+          "creationTimeSeconds": 1790003600,
+          "status": "CLOSED"
+        }
+      ]
+    }
+  ]
+}
+```
+
+### problem.addIssue
+Creates a new problem issue.
+
+The method requires WRITE or OWNER access or the reviewer role and is available to translators.
+
+#### Parameters:
+- `type` - *DISCUSSION/ENHANCEMENT/BUG* - issue type
+- `content` - *string* - issue text in Markdown, 1..16384 characters, UTF-8
+- `assignee` - *string, optional* - login of the user to assign the issue to; the user must have effective WRITE or OWNER access to the problem
+
+#### Returns:
+The created [Issue](#issue) object with status `OPENED` and an empty `comments` list.
+
+### problem.addIssueComment
+Adds a comment to an issue of the problem. Like in the web interface, the same request may also change the issue status, type and assignee.
+
+The method requires WRITE or OWNER access or the reviewer role and is available to translators.
+
+#### Parameters:
+- `issueId` - id of an issue of this problem
+- `content` - *string* - comment text in Markdown, 1..16384 characters, UTF-8
+- `status` - *CLOSED/REOPENED, optional* - new issue status. `CLOSED` is allowed for `OPENED` and `REOPENED` issues, `REOPENED` only for `CLOSED` issues. A `CLOSED` issue accepts a comment only together with `status=REOPENED`.
+- `type` - *DISCUSSION/ENHANCEMENT/BUG, optional* - new issue type
+- `assignee` - *string, optional* - login of the new assignee with effective WRITE or OWNER access to the problem. An empty value removes the assignee; if the parameter is absent, the assignee is not changed.
+
+A `type` or `assignee` equal to the current one is not recorded as a change.
+
+#### Returns:
+The updated [Issue](#issue) object with all its comments.
+
+#### Common behavior of issue changes:
+- Changes take effect immediately; `problem.commitChanges` is not required.
+- Both methods send the same email notifications as the web interface and update the issue counters and cautions of the problem.
+- Requests that pass all checks are rate-limited for each calling user and each method: 60 per minute on average, short bursts are allowed.
+- The methods return HTTP 400 with status `FAILED` for invalid parameters, an invalid status transition, insufficient access, an exceeded rate limit or an invalid required pin. An unknown issue, an issue of another problem and a contest issue all produce `Issue not found`; an unknown assignee login and a user without WRITE access both produce `User not found or has no write access to the problem`.
+- Changes are not transactional. After HTTP 500 or a lost response the change may have been saved completely or partially, so check `problem.issues` before retrying.
+
 ## Contest methods
 To access contest methods, you have to include *contestId* parameter in your request. If the contest has the pin code, you need to include the parameter *pin* in your request.
 
@@ -972,3 +1055,24 @@ If `processing` is *true*, call `problem.cautions` later to check whether the su
 Represents a cached AI review comment for a source file.
 - `name` - source file name
 - `comment` - raw cached AI review comment; may be large
+
+### Issue
+Represents a problem issue.
+- `id` - issue id
+- `type` - DISCUSSION/ENHANCEMENT/BUG - issue type
+- `status` - OPENED/REOPENED/CLOSED - issue status (`OPENED` is shown as `OPEN` in the web interface)
+- `author` - login of the issue author
+- `assignee` - login of the assignee (may be absent)
+- `html` - issue text as HTML stored by Polygon: the Markdown passed in `content` is converted to HTML and sanitized when saved; the original Markdown is not stored
+- `creationTimeSeconds` - issue creation time in unix format
+- `modificationTimeSeconds` - time of the last issue change in unix format
+- `comments` - list of [IssueComment](#issuecomment) objects in chronological order; always present, may be empty
+
+### IssueComment
+Represents an issue comment.
+- `author` - login of the comment author
+- `html` - comment text as HTML, see `html` in [Issue](#issue)
+- `creationTimeSeconds` - comment creation time in unix format
+- `status` - issue status set by this comment (absent if the comment did not change it)
+- `type` - issue type set by this comment (absent if the comment did not change it)
+- `assignee` - login of the assignee set by this comment (absent if the comment did not assign the issue; removing the assignee is not recorded)
