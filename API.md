@@ -2,7 +2,7 @@
 
 ## What's new
 
-- 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.addIssueComment`](#problemaddissuecomment) for reading, creating and commenting problem issues, including closing, reopening, changing type and reassigning them.
+- 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.updateIssue`](#problemupdateissue) for reading, creating, commenting, closing, reopening, retyping and reassigning problem issues.
 - 2026-08-28: [`problem.saveValidatorTest`](#problemsavevalidatortest) and [`problem.saveCheckerTest`](#problemsavecheckertest) now normalize line breaks in passed text parameters to `CRLF` without adding a trailing EOL, treat EOL-equivalent values as duplicates, and clear the previous run result after every successful save.
 - 2026-08-24: [`problem.saveStatement`](#problemsavestatement) now rejects a `name` containing a line break (`CR`, `LF`, `U+2028` or `U+2029`) instead of silently storing a multiline problem name.
 - 2026-08-17: Added [`problem.materials`](#problemmaterials) and [`problem.setMaterial`](#problemsetmaterial) for viewing and changing publishable problem materials in the current working copy.
@@ -89,7 +89,7 @@
     - [problem.cautions](#problemcautions)
     - [problem.issues](#problemissues)
     - [problem.addIssue](#problemaddissue)
-    - [problem.addIssueComment](#problemaddissuecomment)
+    - [problem.updateIssue](#problemupdateissue)
   - [Contest methods](#contest-methods)
     - [contest.problems](#contestproblems)
 - [Return objects](#return-objects)
@@ -179,9 +179,9 @@ Create a new empty problem. Returns a created [Problem](#problem).
 - `name` - name of problem being created
 
 ## Methods for problems
-To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.addIssueComment` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
+To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.updateIssue` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
 
-The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.issues`, `problem.addIssue` and `problem.addIssueComment`.
+The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.issues`, `problem.addIssue` and `problem.updateIssue`.
 
 ### problem.accesses
 Returns the problem's direct access-control entries. Both users and user groups are returned; groups are not expanded into their members. The method does not calculate each user's effective access.
@@ -778,19 +778,19 @@ The method requires WRITE or OWNER access or the reviewer role and is available 
 #### Returns:
 The created [Issue](#issue) object with status `OPENED` and an empty `comments` list.
 
-### problem.addIssueComment
-Adds a comment to an issue of the problem. Like in the web interface, the same request may also change the issue status, type and assignee.
+### problem.updateIssue
+Updates an issue of the problem: changes its status, type and assignee and/or adds a comment. Like in the web interface, every successful request adds one entry to the issue history.
 
 The method requires WRITE or OWNER access or the reviewer role and is available to translators.
 
 #### Parameters:
 - `issueId` - id of an issue of this problem
-- `content` - *string* - comment text in Markdown, 1..16384 characters, UTF-8
-- `status` - *CLOSED/REOPENED, optional* - new issue status. `CLOSED` is allowed for `OPENED` and `REOPENED` issues, `REOPENED` only for `CLOSED` issues. A `CLOSED` issue accepts a comment only together with `status=REOPENED`.
+- `comment` - *string, optional* - comment text in Markdown, up to 16384 characters, UTF-8
+- `status` - *CLOSED/REOPENED, optional* - new issue status. `CLOSED` is allowed for `OPENED` and `REOPENED` issues, `REOPENED` only for `CLOSED` issues. A `CLOSED` issue can be updated only together with `status=REOPENED`.
 - `type` - *DISCUSSION/ENHANCEMENT/BUG, optional* - new issue type
 - `assignee` - *string, optional* - login of the new assignee with effective WRITE or OWNER access to the problem. An empty value removes the assignee; if the parameter is absent, the assignee is not changed.
 
-A `type` or `assignee` equal to the current one is not recorded as a change.
+A `type` or `assignee` equal to the current one is not a change. The request must contain a non-blank `comment` or at least one change; otherwise it fails. Like in the web interface, each change is also described in the text of the history entry, for example `[Status changed from OPEN to CLOSED]`, after the comment if it is given.
 
 #### Returns:
 The updated [Issue](#issue) object with all its comments.
