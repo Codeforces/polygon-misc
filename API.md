@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-10-12: Added [`problem.stresses`](#problemstresses), [`problem.saveStress`](#problemsavestress), [`problem.deleteStress`](#problemdeletestress), [`problem.runStresses`](#problemrunstresses), [`problem.cancelStresses`](#problemcancelstresses) and [`problem.addStressCountertest`](#problemaddstresscountertest) for managing, running and inspecting problem stress tests.
 - 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.updateIssue`](#problemupdateissue) for reading, creating, commenting, closing, reopening, retyping and reassigning problem issues.
 - 2026-08-28: [`problem.saveValidatorTest`](#problemsavevalidatortest) and [`problem.saveCheckerTest`](#problemsavecheckertest) now normalize line breaks in passed text parameters to `CRLF` without adding a trailing EOL, treat EOL-equivalent values as duplicates, and clear the previous run result after every successful save.
 - 2026-08-24: [`problem.saveStatement`](#problemsavestatement) now rejects a `name` containing a line break (`CR`, `LF`, `U+2028` or `U+2029`) instead of silently storing a multiline problem name.
@@ -90,6 +91,12 @@
     - [problem.issues](#problemissues)
     - [problem.addIssue](#problemaddissue)
     - [problem.updateIssue](#problemupdateissue)
+    - [problem.stresses](#problemstresses)
+    - [problem.saveStress](#problemsavestress)
+    - [problem.deleteStress](#problemdeletestress)
+    - [problem.runStresses](#problemrunstresses)
+    - [problem.cancelStresses](#problemcancelstresses)
+    - [problem.addStressCountertest](#problemaddstresscountertest)
   - [Contest methods](#contest-methods)
     - [contest.problems](#contestproblems)
 - [Return objects](#return-objects)
@@ -123,6 +130,10 @@
     - [SourceAiTip](#sourceaitip)
     - [Issue](#issue)
     - [IssueComment](#issuecomment)
+    - [Stress](#stress)
+    - [StressRun](#stressrun)
+    - [StressCountertest](#stresscountertest)
+    - [StressSolutionReport](#stresssolutionreport)
 
 # How to download a problem or contest
 Use HTTP POST-requests:
@@ -802,6 +813,77 @@ The updated [Issue](#issue) object with all its comments.
 - The methods return HTTP 400 with status `FAILED` for invalid parameters, an invalid status transition, insufficient access, an exceeded rate limit or an invalid required pin. An unknown issue, an issue of another problem and a contest issue all produce `Issue not found`; an unknown assignee login and a user without WRITE access both produce `User not found or has no write access to the problem`.
 - Changes are not transactional. After HTTP 500 or a lost response the change may have been saved completely or partially, so check `problem.issues` before retrying.
 
+### problem.stresses
+Returns the stresses of the problem with the latest run of each stress.
+
+#### Parameters:
+- `stressIndex` - *integer, optional* - index of a stress (1..1000). If specified, only this stress is returned; use it to poll a running stress.
+
+#### Returns:
+A list of [Stress](#stress) objects in ascending order of `index`, `[]` if there are no stresses. The result is always a list, also when `stressIndex` is specified.
+
+### problem.saveStress
+Creates a new stress or updates an existing one.
+
+#### Parameters:
+- `stressIndex` - *integer, optional* - if the parameter is absent, a new stress is created with the smallest free index; otherwise the existing stress with this index is updated.
+- `scriptPattern` - *string, required on creation* - generator script pattern, 1..1000 characters, for example `gen 10 [5..100] abacaba`. Each `[a..b]` is replaced with a random integer from the range on every iteration, several runs can be separated with `|`. All generators of the pattern must compile; if the strict run arguments validation is enabled for the problem, its rules apply.
+- `solutionNames` - *string, required on creation* - comma-separated names of solutions to compare with the main correct solution. A solution must exist and must not have the tag `DO_NOT_RUN`. The main correct solution is the reference: it is added first if it is not listed. The order is kept, duplicates are ignored.
+- `timeLimit` - *integer, optional* - time limit of a solution run, 250..15000 ms. Defaults to the problem time limit on creation.
+- `memoryLimit` - *integer, optional* - memory limit of a solution run, 4..1024 MB. Defaults to the problem memory limit on creation.
+- `totalTimeLimit` - *integer, optional* - duration of the stress run: 5000, 15000, 30000, 60000, 90000 or 120000 ms. Defaults to 60000 on creation. It is not a deadline for the result: a run may also wait in queues.
+- `testset` - *string, optional* - testset context passed to validators, up to 32 lowercase letters, digits and underscores; the testset does not have to exist. An empty value clears it.
+- `group` - *string, optional* - test group context passed to validators and assigned to the countertest by `problem.addStressCountertest`, up to 32 characters `[0-9a-zA-Z-]`. An empty value clears it.
+- `ignoreValidators` - *boolean, optional* - disables the problem validator and the extra validators; the well-formed check, if it is enabled for the problem, still applies. `false` on creation.
+- `description` - *string, optional* - up to 1000 characters. An empty value clears it.
+
+On update, parameters that are not specified keep their values. Every successful save creates a new version of the stress, so the result of its previous run is not returned anymore. A running stress is not cancelled by a save: its job finishes and the result is discarded, call `problem.cancelStresses` first to free invokers. Explicitly specified `solutionNames` detach the stress from the copies created with the Copy action of the web interface; other stresses are not changed. The input and output file names of a stress are taken from the problem on creation and are not changed by the API.
+
+#### Returns:
+The saved [Stress](#stress) object without `run`.
+
+### problem.deleteStress
+Deletes a stress and the result of its run. Tests already added from the stress are kept. A running stress is not cancelled: its job finishes and the result is discarded, call `problem.cancelStresses` first to free invokers.
+
+#### Parameters:
+- `stressIndex` - index of an existing stress
+
+### problem.runStresses
+Starts stresses asynchronously with the current files of the working copy. Poll `problem.stresses` for the result.
+
+#### Parameters:
+- `stressIndices` - *string, optional* - comma-separated stress indices. If absent, all stresses of the problem are started.
+
+All indices are checked before anything is started. Stresses that are `PENDING` or `RUNNING` are not restarted; a new run of any other stress replaces its previous result. If the user is temporarily locked because of the load on invokers, the method fails with "The problem is locked for you" and starts nothing. Errors of the environment (for example, a deleted solution or an unset checker) are not checked in advance: they are reported in the run result as a `FAILED` or `CRASHED` verdict with a comment.
+
+### problem.cancelStresses
+Cancels runs of stresses. Works even if the working copy has conflicts or the user is locked because of the load on invokers.
+
+#### Parameters:
+- `stressIndices` - *string, optional* - comma-separated stress indices. If absent, all stresses of the problem.
+
+For a `PENDING` or `RUNNING` stress the run result is removed, so `run` disappears. Jobs not yet sent to invokers are cancelled; a job already running on an invoker may finish, its result is discarded and, as a rule, does not reappear. Stresses that are not running are skipped and keep their finished results.
+
+### problem.addStressCountertest
+Adds the countertest found by the latest finished run of a stress to the tests of a testset, like "Add to tests" in the web interface.
+
+#### Parameters:
+- `stressIndex` - index of a stress whose latest finished run has a countertest (with any verdict)
+- `testset` - name of an existing testset
+
+The test is generated by `countertest.scriptLine`, not by the possibly truncated input, using the current generators and validators. It gets the smallest free index, the group of the stress (if it is set) and a description that mentions the stress; it is not used in statements. A small generated input may be stored as a manual test. The call is synchronous: it waits for the test generation and validation.
+
+The method fails if the testset already has a test with the same `scriptLine`. An equal input is detected by the usual check of manual tests, including the case when the added test is stored as a manual one; other equal inputs (for example, a large input generated by a different script line) are not detected.
+
+#### Returns:
+The added [Test](#test).
+
+#### Common behavior of stress methods:
+- The methods require READ access to the problem and are not available to translators. They work with the working copy of the calling user. Changes of stresses and added tests are included into the problem revision and packages only after `problem.commitChanges`. Run results are local to the working copy, are not committed and only the latest run of each stress is kept.
+- `problem.stresses` and `problem.cancelStresses` work even if the working copy has conflicts; the other methods fail in this case.
+- The methods return HTTP 400 with status `FAILED` for invalid parameters, an unknown stress index, an unknown or `DO_NOT_RUN` solution, a problem without a main correct solution, an invalid script pattern or a generator that doesn't compile, the limit of 1000 stresses, the lock because of the load on invokers (`problem.runStresses`), a missing countertest or a duplicate test (`problem.addStressCountertest`), insufficient access or an invalid required pin.
+- Changes are not transactional. After HTTP 500 or a lost response check `problem.stresses` (and `problem.tests` after `problem.addStressCountertest`) before retrying. For example, a failure in the middle of `problem.runStresses` may leave some stresses `PENDING` without a runner: cancel them with `problem.cancelStresses` and run again.
+
 ## Contest methods
 To access contest methods, you have to include *contestId* parameter in your request. If the contest has the pin code, you need to include the parameter *pin* in your request.
 
@@ -1076,3 +1158,100 @@ Represents an issue comment.
 - `status` - issue status set by this comment (absent if the comment did not change it)
 - `type` - issue type set by this comment (absent if the comment did not change it)
 - `assignee` - login of the assignee set by this comment (absent if the comment did not assign the issue; removing the assignee is not recorded)
+
+### Stress
+Represents a stress of the problem returned by [`problem.stresses`](#problemstresses) and [`problem.saveStress`](#problemsavestress).
+- `index` - stress index, 1..1000
+- `scriptPattern` - generator script pattern
+- `solutionNames` - list of solution names, including the main correct solution
+- `timeLimit` - time limit of a solution run, ms
+- `memoryLimit` - memory limit of a solution run, MB
+- `totalTimeLimit` - duration of the stress run, ms
+- `testset` - testset context for validators (absent if not set)
+- `group` - test group context for validators (absent if not set)
+- `ignoreValidators` - boolean, whether the problem validator and the extra validators are disabled
+- `description` - stress description, may be empty
+- `run` - [StressRun](#stressrun) object with the latest run of the current version of the stress; absent if the stress has not been run since its last save or the run was cancelled
+
+### StressRun
+Represents the latest run of a stress.
+- `status` - PENDING/RUNNING/FINISHED. `RUNNING` includes waiting in queues; the statistics is written only when the run finishes.
+- `verdict` - only for `FINISHED`:
+    - `OK` - the stress ran normally. `countertest` is present if a solution failed on a generated test; if it is absent, nothing was found within `totalTimeLimit`, which doesn't prove that the solutions are correct.
+    - `FAILED` - the run itself failed (generator, validation of a generated test, the main solution and so on), see `comment`; `countertest` may contain the test on which it happened.
+    - `CRASHED` - an unexpected failure, see `comment`.
+
+  Use `countertest`, not `verdict`, to find out whether a countertest was found.
+- `comment` - comment of the run (may be absent)
+- `judgedTestCount` - number of judged tests, only for `FINISHED`
+- `maxConsumedTime` - maximal consumed time of a solution run, ms, only for `FINISHED`
+- `maxConsumedMemory` - maximal consumed memory of a solution run, bytes, only for `FINISHED`; the counters may be zero after an early failure
+- `countertest` - [StressCountertest](#stresscountertest) object (may be absent)
+
+Example `problem.stresses` response:
+
+```json
+{
+  "status": "OK",
+  "result": [
+    {
+      "index": 1,
+      "scriptPattern": "gen 10 [5..100] abacaba",
+      "solutionNames": ["main.cpp", "wa.cpp"],
+      "timeLimit": 2000,
+      "memoryLimit": 256,
+      "totalTimeLimit": 60000,
+      "ignoreValidators": false,
+      "description": "small random tests",
+      "run": {
+        "status": "FINISHED",
+        "verdict": "OK",
+        "judgedTestCount": 412,
+        "maxConsumedTime": 31,
+        "maxConsumedMemory": 4194304,
+        "countertest": {
+          "input": "57\n3 1 4 1 5 ...",
+          "inputTruncated": true,
+          "scriptLine": "gen 10 57 abacaba 2f8a91",
+          "reports": [
+            {"solutionName": "wa.cpp", "verdict": "WRONG_ANSWER", "consumedTime": 15, "consumedMemory": 2097152,
+             "output": "12", "outputTruncated": false, "answer": "13", "answerTruncated": false,
+             "comment": "wrong answer expected 13, found 12"}
+          ]
+        }
+      }
+    },
+    {
+      "index": 2,
+      "scriptPattern": "gen 1000 [1..1000000000]",
+      "solutionNames": ["main.cpp", "slow.cpp"],
+      "timeLimit": 2000,
+      "memoryLimit": 256,
+      "totalTimeLimit": 30000,
+      "testset": "tests",
+      "ignoreValidators": false,
+      "description": "",
+      "run": {"status": "RUNNING"}
+    }
+  ]
+}
+```
+
+### StressCountertest
+Represents a countertest found by a stress run.
+- `scriptLine` - generator command line with the random values substituted; [`problem.addStressCountertest`](#problemaddstresscountertest) adds a test with it
+- `input` - test input, may be truncated; absent if the run failed before the input was received (for example, when a validator rejected the generated test)
+- `inputTruncated` - boolean, whether `input` is truncated
+- `reports` - list of [StressSolutionReport](#stresssolutionreport) objects for the solutions that failed this test (may include the main solution); may be empty
+
+### StressSolutionReport
+Represents the result of a solution on a countertest.
+- `solutionName` - solution name
+- `verdict` - WRONG_ANSWER, PRESENTATION_ERROR, TIME_LIMIT_EXCEEDED, MEMORY_LIMIT_EXCEEDED, IDLENESS_LIMIT_EXCEEDED, RUNTIME_ERROR, FAILED or CRASHED (the model also allows TIME_LIMIT_EXCEEDED_OR_ACCEPTED and TIME_LIMIT_EXCEEDED_OR_MEMORY_LIMIT_EXCEEDED)
+- `consumedTime` - consumed time, ms
+- `consumedMemory` - consumed memory, bytes
+- `output` - output of the solution (may be absent or truncated)
+- `outputTruncated` - boolean, whether `output` is truncated
+- `answer` - answer of the main correct solution (may be absent or truncated)
+- `answerTruncated` - boolean, whether `answer` is truncated
+- `comment` - checker comment (may be absent)
