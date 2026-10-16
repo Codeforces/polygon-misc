@@ -2,6 +2,7 @@
 
 ## What's new
 
+- 2026-10-16: Added [`problem.deleteSolution`](#problemdeletesolution), [`problem.deleteFile`](#problemdeletefile), [`problem.deleteStatement`](#problemdeletestatement), [`problem.deleteStatementResource`](#problemdeletestatementresource), [`problem.deleteValidatorTest`](#problemdeletevalidatortest) and [`problem.deleteCheckerTest`](#problemdeletecheckertest) for deleting objects that can be uploaded through the API.
 - 2026-10-12: Added [`problem.stresses`](#problemstresses), [`problem.saveStress`](#problemsavestress), [`problem.deleteStress`](#problemdeletestress), [`problem.runStresses`](#problemrunstresses), [`problem.cancelStresses`](#problemcancelstresses) and [`problem.addStressCountertest`](#problemaddstresscountertest) for managing, running and inspecting problem stress tests.
 - 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.updateIssue`](#problemupdateissue) for reading, creating, commenting, closing, reopening, retyping and reassigning problem issues.
 - 2026-08-28: [`problem.saveValidatorTest`](#problemsavevalidatortest) and [`problem.saveCheckerTest`](#problemsavecheckertest) now normalize line breaks in passed text parameters to `CRLF` without adding a trailing EOL, treat EOL-equivalent values as duplicates, and clear the previous run result after every successful save.
@@ -40,17 +41,21 @@
     - [problem.statements](#problemstatements)
     - [problem.renderStatements](#problemrenderstatements)
     - [problem.saveStatement](#problemsavestatement)
+    - [problem.deleteStatement](#problemdeletestatement)
     - [problem.statementResources](#problemstatementresources)
     - [problem.viewStatementResource](#problemviewstatementresource)
     - [problem.saveStatementResource](#problemsavestatementresource)
+    - [problem.deleteStatementResource](#problemdeletestatementresource)
     - [problem.checker](#problemchecker)
     - [problem.validator](#problemvalidator)
     - [problem.extraValidators](#problemextravalidators)
     - [problem.interactor](#probleminteractor)
     - [problem.validatorTests](#problemvalidatortests)
     - [problem.saveValidatorTest](#problemsavevalidatortest)
+    - [problem.deleteValidatorTest](#problemdeletevalidatortest)
     - [problem.checkerTests](#problemcheckertests)
     - [problem.saveCheckerTest](#problemsavecheckertest)
+    - [problem.deleteCheckerTest](#problemdeletecheckertest)
     - [problem.files](#problemfiles)
     - [problem.solutions](#problemsolutions)
     - [problem.viewFile](#problemviewfile)
@@ -65,8 +70,10 @@
     - [problem.setChecker](#problemsetchecker)
     - [problem.setInteractor](#problemsetinteractor)
     - [problem.saveFile](#problemsavefile)
+    - [problem.deleteFile](#problemdeletefile)
     - [problem.saveSolution](#problemsavesolution)
     - [problem.editSolutionExtraTags](#problemeditsolutionextratags)
+    - [problem.deleteSolution](#problemdeletesolution)
     - [problem.saveScript](#problemsavescript)
     - [problem.saveTest](#problemsavetest)
     - [problem.deleteTest](#problemdeletetest)
@@ -192,7 +199,7 @@ Create a new empty problem. Returns a created [Problem](#problem).
 ## Methods for problems
 To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.updateIssue` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
 
-The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.issues`, `problem.addIssue` and `problem.updateIssue`.
+The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.deleteStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.deleteStatementResource`, `problem.issues`, `problem.addIssue` and `problem.updateIssue`.
 
 ### problem.accesses
 Returns the problem's direct access-control entries. Both users and user groups are returned; groups are not expanded into their members. The method does not calculate each user's effective access.
@@ -328,6 +335,14 @@ Update or create a problem's statement. All parameters except for *lang* are opt
 - `showInReview` - *boolean* - whether to show the statement in the problem review
 - `showCautionsAndGrammaticalFixes` - *boolean* - whether to show cautions and grammatical fixes for this statement
 
+### problem.deleteStatement
+Delete the problem's statement in the specified language. Statement resources are not deleted. Returns "FAILED" if there is no statement in this language.
+
+This method is available to translators.
+
+#### Parameters:
+- `lang` - statement's language, exactly as returned by [problem.statements](#problemstatements)
+
 ### problem.statementResources
 Returns a list of statement resources for the problem.
 
@@ -354,6 +369,14 @@ This method is available to translators.
 - `checkExisting` - boolean, optional - if *true*, only adding files is allowed
 - `name` - file name
 - `file` - file content
+
+### problem.deleteStatementResource
+Delete statement resource file. Returns "FAILED" if there is no such file.
+
+This method is available to translators.
+
+#### Parameters:
+- `name` - exact (case-sensitive) file name, as returned by [problem.statementResources](#problemstatementresources)
 
 ### problem.checker
 Returns the name of the currently set checker.
@@ -387,6 +410,12 @@ Add or edit validator test. Line breaks in passed *testInput* are normalized to 
 - `testGroup` - *optional* - test group (groups should be enabled for the testset)
 - `testset` - *optional* - testset name
 
+### problem.deleteValidatorTest
+Delete validator test. Indices of other validator tests do not change. Returns "FAILED" if there is no such test.
+
+#### Parameters:
+- `testIndex` - index of the validator test
+
 ### problem.checkerTests
 Returns a list of checker tests for the problem.
 
@@ -406,6 +435,12 @@ Adds or edits checker test. Line breaks in passed *testInput*, *testOutput* and 
 - `testInput` - input of a checker test
 - `testOutput` - output of a checker test
 - `testAnswer` - answer of a checker test
+
+### problem.deleteCheckerTest
+Delete checker test. Indices of other checker tests do not change. Returns "FAILED" if there is no such test.
+
+#### Parameters:
+- `testIndex` - index of the checker test
 
 ### problem.files
 Returns the list of resource, source and aux files. Method returns a JSON object with three fields: *resourceFiles, sourceFiles* and *auxFiles*, each of them is a list of [*File*](#file) objects.
@@ -507,6 +542,13 @@ The parameters *forTypes, stages, assets* can be present only together (it means
 
 To delete ResourceAdvancedProperties of a resource file pass empty "*forTypes="*.
 
+### problem.deleteFile
+Delete resource, source or aux file. Returns "FAILED" if there is no such file. Resource files *olymp.sty*, *problem.tex* and *statements.ftl* can't be deleted. A source file can't be deleted while it is used as a generator in a test script or in a stress.
+
+#### Parameters:
+- `type` - file type (*resource*/*source* or *aux*)
+- `name` - exact (case-sensitive) file name, as returned by [problem.files](#problemfiles)
+
 ### problem.saveSolution
 Add or edit solution. In case of editing, all parameters except for *name* are optional.
 
@@ -527,6 +569,12 @@ Add or remove testset or test group extra tag for solution.
 - `testGroup` - optional - test group name for which edit extra tag
 Exactly one from *testset* and *testGroup* should be specified
 - `tag` - *optional* - when you add extra tag - solution's extra tag: *OK*, *RJ*, *TL*, *TO* (Time Limit or Accepted), *TM* (Time Limit or Memory Limit), *WA*, *PE*, *ML, NR* (Do not run), *RE*.
+
+### problem.deleteSolution
+Delete solution. Returns "FAILED" if there is no such solution. The solution is also removed from stresses; a stress left without solutions is deleted.
+
+#### Parameters:
+- `name` - exact (case-sensitive) solution name, as returned by [problem.solutions](#problemsolutions)
 
 ### problem.saveScript
 Edit script.
