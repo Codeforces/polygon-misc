@@ -2,6 +2,12 @@
 
 ## What's new
 
+- 2026-10-26: Added [`problem.invocations`](#probleminvocations) and [`problem.invocation`](#probleminvocation) for reading stored results of invocations of the current working copy, including package verification: verdict, time and memory of each solution on each test.
+- 2026-10-26: Added `runTwice` and `interactiveSecondRun` to [`problem.info`](#probleminfo) and [`problem.updateInfo`](#problemupdateinfo); `interactiveSecondRun` is available only for interactive problems.
+- 2026-10-25: [`problem.saveSolution`](#problemsavesolution) now keeps the author of an existing solution when editing it, even if `file` is replaced.
+- 2026-10-21: The problem pin code is now checked after the signature, rate limit and READ access checks, before the translator and WRITE access checks. A missing or wrong pin of an accessible problem is reported as `Pin is incorrect` with HTTP status 400; requests to an inaccessible problem fail with `problemId: Problem not found` regardless of the pin. Wrong pins are counted in hour-long windows per user and pin code (a contest's pin code is shared by its problems), each starting with the user's first attempt at that pin code after the previous window ended; after 20 missing or wrong pins in a window, the methods of the problems and contest with that pin code fail for this user with `Too many incorrect pin attempts, try again later` regardless of the pin until the window ends. Repeating [`problem.setAccess`](#problemsetaccess) with the already stored state now re-synchronizes repository permissions.
+- 2026-10-21: Problem package and `problem.xml` downloads now require READ access and are not available to translators, see [How to download a problem or contest](#how-to-download-a-problem-or-contest).
+- 2026-10-21: [`problem.accesses`](#problemaccesses), [`problem.setAccess`](#problemsetaccess), [`problem.note`](#problemnote), [`problem.saveNote`](#problemsavenote), [`problem.issues`](#problemissues), [`problem.packages`](#problempackages) and [`problem.package`](#problempackage) no longer create or unpack the working copy and no longer fail if its files have been lost; `problem.packages` and `problem.package` no longer fail if it has conflicts. [`problem.discardWorkingCopy`](#problemdiscardworkingcopy) deletes the working copy without preparing it. Other problem methods now replace a working copy whose files have been lost, see [Methods for problems](#methods-for-problems).
 - 2026-10-16: Added [`problem.deleteSolution`](#problemdeletesolution), [`problem.deleteFile`](#problemdeletefile), [`problem.deleteStatement`](#problemdeletestatement), [`problem.deleteStatementResource`](#problemdeletestatementresource), [`problem.deleteValidatorTest`](#problemdeletevalidatortest) and [`problem.deleteCheckerTest`](#problemdeletecheckertest) for deleting objects that can be uploaded through the API.
 - 2026-10-12: Added [`problem.stresses`](#problemstresses), [`problem.saveStress`](#problemsavestress), [`problem.deleteStress`](#problemdeletestress), [`problem.runStresses`](#problemrunstresses), [`problem.cancelStresses`](#problemcancelstresses) and [`problem.addStressCountertest`](#problemaddstresscountertest) for managing, running and inspecting problem stress tests.
 - 2026-10-06: Added [`problem.issues`](#problemissues), [`problem.addIssue`](#problemaddissue) and [`problem.updateIssue`](#problemupdateissue) for reading, creating, commenting, closing, reopening, retyping and reassigning problem issues.
@@ -94,6 +100,8 @@
     - [problem.packages](#problempackages)
     - [problem.package](#problempackage)
     - [problem.buildPackage](#problembuildpackage)
+    - [problem.invocations](#probleminvocations)
+    - [problem.invocation](#probleminvocation)
     - [problem.cautions](#problemcautions)
     - [problem.issues](#problemissues)
     - [problem.addIssue](#problemaddissue)
@@ -127,6 +135,9 @@
     - [MaterialItem](#materialitem)
     - [MaterialTest](#materialtest)
     - [Package](#package)
+    - [Invocation](#invocation)
+    - [SolutionTags](#solutiontags)
+    - [InvocationRun](#invocationrun)
     - [ValidatorTest](#validatortest)
     - [CheckerTest](#checkertest)
     - [ProblemCautions](#problemcautions-1)
@@ -159,6 +170,8 @@ Use HTTP POST-requests:
 
     wget --post-data=login=vtapochkin&password=???
     https://polygon.codeforces.com/c/50431a121273b7e31f4200e7/contest.xml
+
+Problem downloads require READ access; the pin code is checked after the access check. Translators can't download the problem package or `problem.xml`.
 
 # Introduction
 To access Polygon API you just send a HTTP-request to address `https://polygon.codeforces.com/api/{methodName}` with method-specific parameters.
@@ -197,7 +210,9 @@ Create a new empty problem. Returns a created [Problem](#problem).
 - `name` - name of problem being created
 
 ## Methods for problems
-To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.updateIssue` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request.
+To access problem-specific API methods, add a *problemId* parameter to your request. The user must have access to the problem. Methods require at least READ access unless stated otherwise; `problem.commitChanges`, `problem.saveNote` and `problem.buildPackage` require WRITE access. `problem.accesses` requires effective WRITE or OWNER access, including access received through a user group. `problem.setAccess` requires direct WRITE or OWNER access; group access alone is insufficient. Administrators may use both access-management methods. `problem.addIssue` and `problem.updateIssue` require WRITE or OWNER access or the reviewer role. Translators may use only methods explicitly marked as available to translators. If the problem has the pin code, add the *pin* parameter to your request; it is checked after the signature and READ access checks, and a missing or wrong pin is reported as `Pin is incorrect`. Wrong pins are counted per pin code (a contest's pin code is shared by its problems) in hour-long windows, each starting with your first attempt at that pin code after the previous window ended; after 20 missing or wrong pins in a window, the problem's methods fail with `Too many incorrect pin attempts, try again later`, even with the right pin, until the window ends.
+
+Problem methods work with the calling user's working copy and create it from the latest revision if it does not exist, except `problem.accesses`, `problem.setAccess`, `problem.note`, `problem.saveNote`, `problem.issues`, `problem.packages` and `problem.package`, which do not use it, and `problem.discardWorkingCopy`, which deletes it without preparing it. If the files of the working copy have been lost, the next method that uses it switches to the user's other existing working copy of the problem, if any, or replaces it with a new working copy of the latest revision; uncommitted changes of the lost copy cannot be restored. If several requests for the problem run in parallel at that moment, some of them may fail or their changes may be lost, so check the working copy state before retrying.
 
 The problem-specific methods available to translators are `problem.info`, `problem.statements`, `problem.renderStatements`, `problem.saveStatement`, `problem.deleteStatement`, `problem.statementResources`, `problem.viewStatementResource`, `problem.saveStatementResource`, `problem.deleteStatementResource`, `problem.issues`, `problem.addIssue` and `problem.updateIssue`.
 
@@ -239,7 +254,7 @@ The method requires direct WRITE or OWNER access and is not available to transla
 #### Behavior:
 - `READ` and `WRITE` create a direct entry or change its type. `NONE` removes only the direct entry; access received through a user group remains effective.
 - Removing the last effective access of the `codeforces` account is subject to Codeforces protection checks when enabled. If removal is prohibited or the status cannot be verified, the method returns `FAILED` with the reason and retains the direct entry.
-- Repeating the already stored direct state is a successful no-op. It does not rewrite the entry, update permissions or modification time, send email, or consume this method's change rate limit.
+- Repeating the already stored direct state is successful and does not rewrite the entry, update the modification time, or send email. It only re-synchronizes repository permissions with the stored access list where the repository allows it, so a retry repairs them after a request that failed with an internal error; beyond a few such repeats a minute per problem it consumes this method's change rate limit, and once that is exhausted too it returns `FAILED` asking to wait instead of skipping the re-synchronization; if the repository itself can't be updated, the failure is only logged and the method still succeeds; the email and the modification time of that request are not repeated, and a caller who lost the required access by that request can't retry it.
 - `OWNER` cannot be assigned. A direct owner cannot be downgraded or removed. A real `READ` or `WRITE` change is also rejected while the target user's effective access is OWNER.
 - The caller may change or remove their own non-OWNER direct access. Consequently, a successful request can remove the caller's access to the problem.
 - On a real `READ`/`WRITE` type change, the existing `receiveEmails` setting is preserved while reviewer, supervisor and translator roles are cleared. These role fields are not exposed by this API.
@@ -255,7 +270,7 @@ A successful response has status `OK` and no `result` field:
 The method returns HTTP 400 with status `FAILED` for an unknown user, an unsupported user-group login or `accessType`, insufficient direct access, an attempt to change ownership, a sample or example problem, an exceeded change rate limit, an invalid required pin, or an access removal rejected by the Codeforces protection check.
 
 ### problem.info
-Returns a [ProblemInfo](#probleminfo) object.
+Returns a [ProblemInfo](#probleminfo-1) object.
 
 ### problem.updateInfo
 Update problem info. All parameters are optional.
@@ -264,8 +279,11 @@ Update problem info. All parameters are optional.
 - `inputFile` - problem's input file, optional; if specified, must be 1..64 characters, valid text and UTF-8
 - `outputFile` - problem's output file, optional; if specified, must be 1..64 characters, valid text and UTF-8
 - `interactive` - *boolean* - is problem interactive
+- `useInteractionLogInExampleTests` - *boolean* - whether to use interaction log in example tests (available only for interactive problems)
 - `wellFormed` - *boolean* - is tests well-formed
 - `skipDuplicatedTestsValidation` - *boolean* - whether to skip checking that tests are unique
+- `runTwice` - *boolean* - whether to run solutions twice on each test: the output of the solution or the interactor is passed to the input of the second run
+- `interactiveSecondRun` - *boolean* - whether the second run is interactive too, takes effect only if *runTwice* is enabled (available only for interactive problems)
 - `timeLimit` - problem's time limit in milliseconds, from 250 to 15000, must be divisible by 50
 - `memoryLimit` - problem's memory limit in MB, from 4 to 1024
 
@@ -290,7 +308,7 @@ Saves problem note. This method updates the stored problem note immediately; it 
 Updates working copy.
 
 ### problem.discardWorkingCopy
-Discards working copy.
+Discards the calling user's working copy of the problem, the one the other methods use: its files and record are deleted without preparing it. Uncommitted changes are lost.
 
 ### problem.commitChanges
 Commits problem changes. All parameters are optional.
@@ -550,7 +568,7 @@ Delete resource, source or aux file. Returns "FAILED" if there is no such file. 
 - `name` - exact (case-sensitive) file name, as returned by [problem.files](#problemfiles)
 
 ### problem.saveSolution
-Add or edit solution. In case of editing, all parameters except for *name* are optional.
+Add or edit solution. In case of editing, all parameters except for *name* are optional, and the solution's author is kept even if *file* is replaced (e.g. pass only *name* and *tag* to change the tag).
 
 #### Parameters:
 - `checkExisting` - boolean, optional - if *true*, only adding solutions is allowed
@@ -597,6 +615,7 @@ Add or edit test. In case of editing, all parameters except for *testset* and *t
 - `testUseInStatements` - bool, optional - whether to use test in statements
 - `testInputForStatements` - optional - test input for viewing in the statements
 - `testOutputForStatements` - optional - test output for viewing in the statements
+- `testInteractionLogForStatements` - optional - test interaction log for viewing in the statements
 - `verifyInputOutputForStatements` - bool, optional - whether to verify input and output for statements
 
 ### problem.deleteTest
@@ -770,6 +789,35 @@ Starts to build a new [*Package*](#package).
 Standard packages don't contain generated tests, but contain windows executables and scripts for windows and linux via wine. Linux packages contain generated tests, but don't contain compiled binaries. Windows packages contain generated tests and compiled binaries for Windows.
 - `verify` - bool - if that parameter is true all solutions will be invoked on all tests to be sure that tags are valid. Stress tests will run the checker to verify its credibility.
 
+### problem.invocations
+Returns invocations of the current working copy: solution runs started on the Invocations page and the verification runs of packages built from this working copy, see [problem.buildPackage](#problembuildpackage). Invocations of other users' working copies are not available.
+
+The method requires READ access and is not available to translators. It works even if the working copy has conflicts.
+
+#### Parameters:
+- `packageId` - long, optional - if specified, only the verification invocations of this package are returned: one per verified testset
+
+#### Returns:
+A list of [Invocation](#invocation) objects, the newest first.
+
+### problem.invocation
+Returns the stored results of an invocation of the current working copy: the result of each solution on each test.
+
+The method requires READ access and is not available to translators. It works even if the working copy has conflicts.
+
+#### Parameters:
+- `invocationId` - invocation id, as returned by [problem.invocations](#probleminvocations). An invocation of another working copy or problem is reported as `Invocation not found`.
+
+#### Returns:
+An object with the fields:
+- `invocation` - an [Invocation](#invocation) object
+- `solutionTags` - a list of [SolutionTags](#solutiontags) objects: the tags of the solutions as they were when the invocation started; present only for solutions with stored runs
+- `runs` - a list of [InvocationRun](#invocationrun) objects stored by the moment of the request, in the order they were created
+
+The results are complete only if the invocation `status` is `FINISHED` and there is a run for each pair of `solutions` and `tests` of the invocation. Otherwise the invocation is still running, is being rejudged or has been interrupted: read it again later, or rejudge it on the Invocations page if runs are still missing.
+
+When package verification finds a solution violating its tag on the first test of the solution, the remaining tests of this solution are skipped (`RJ` runs without measurements), and the next testsets are not verified. Errors that are not tied to a single run, such as a solution that passed all tests but is tagged as failing, are reported only in the package `comment`, so runs without `violateTag` don't mean that the verification succeeded.
+
 ### problem.cautions
 Returns structured warnings and package-readiness issues for the problem. Also returns cached "Correction tips from AI", if available.
 
@@ -933,7 +981,7 @@ The added [Test](#test).
 - Changes are not transactional. After HTTP 500 or a lost response check `problem.stresses` (and `problem.tests` after `problem.addStressCountertest`) before retrying. For example, a failure in the middle of `problem.runStresses` may leave some stresses `PENDING` without a runner: cancel them with `problem.cancelStresses` and run again.
 
 ## Contest methods
-To access contest methods, you have to include *contestId* parameter in your request. If the contest has the pin code, you need to include the parameter *pin* in your request.
+To access contest methods, you have to include *contestId* parameter in your request. If the contest has the pin code, you need to include the parameter *pin* in your request. Wrong pins are counted per pin code (shared with the contest's problems) in hour-long windows, each starting with your first attempt at that pin code after the previous window ended; after 20 wrong pins in a window, the contest's methods fail with `pin: Too many incorrect pin attempts, try again later`, even with the right pin, until the window ends.
 
 ### contest.problems
 Returns a list of [*Problem*](#problem) objects - problems of the contest.
@@ -966,8 +1014,11 @@ Represents the problem's general information.
 - `inputFile` - problem's input file
 - `outputFile` - problem's output file
 - `interactive` - *boolean* - is problem interactive
+- `useInteractionLogInExampleTests` - *boolean* - whether to use interaction log in example tests (only for interactive problems)
 - `wellFormed` - *boolean* - is tests well-formed
 - `skipDuplicatedTestsValidation` - *boolean* - whether checking that tests are unique is skipped
+- `runTwice` - *boolean* - whether solutions are run twice on each test
+- `interactiveSecondRun` - *boolean* - whether the second run is interactive too (only for interactive problems)
 - `timeLimit` - problem's time limit in milliseconds
 - `memoryLimit` - problem's memory limit in MB
 
@@ -1049,6 +1100,7 @@ Represents a test for the problem.
 - `points` - test points (may be absent)
 - `inputForStatement` - input for statements (may be absent)
 - `outputForStatement` - output for statements (may be absent)
+- `interactionLogForStatement` - interaction log for statements (may be absent)
 - `verifyInputOutputForStatements` - boolean - whether to verify input and output for statements (may be absent)
 
 ### DeleteTestsResult
@@ -1116,6 +1168,37 @@ Represents a package.
 - `state` - PENDING/RUNNING/READY/FAILED package's state
 - `comment` - comment for the package
 - `type` - type of the package: "standard", "linux" or "windows". Standard packages don't contain generated tests, but contain windows executables and scripts for windows and linux via wine. Linux packages contain generated tests, but don't contain compiled binaries. Windows packages contain generated tests and compiled binaries for Windows.
+
+### Invocation
+Represents an invocation: runs of solutions on tests of a testset.
+- `id` - invocation id
+- `description` - invocation description
+- `testset` - testset name
+- `status` - PENDING/RUNNING/FINISHED/ABORTED invocation's status
+- `creationTimeSeconds` - invocation's creation time in unix format
+- `packageId` - id of the package verified by this invocation (absent for invocations started on the Invocations page)
+- `violateTag` - boolean - the stored flag of the invocation: set when some run violates the solution's tag and on some scheduling errors, so it may be *true* even without runs violating tags; returned as stored
+- `solutions` - list of names of the invoked solutions
+- `tests` - list of indices of the invoked tests
+
+### SolutionTags
+Represents the tags of a solution as they were when the invocation started.
+- `name` - solution name
+- `tag` - solution's tag code, see [problem.saveSolution](#problemsavesolution) (may be absent)
+- `testsetTags` - object mapping testset names to the solution's extra tag codes (absent if there are none)
+- `groupTags` - object mapping test group names to the solution's extra tag codes (absent if there are none)
+
+### InvocationRun
+Represents a stored run of a solution on a test.
+- `id` - run id
+- `solution` - solution name (absent if the solution source is no longer stored)
+- `test` - test index
+- `verdict` - OK/WA/PE/TL/ML/IL/RE/CE/FL/RJ/NO/TS - run verdict; NO - the run is waiting, TS - the run is being tested, RJ - the run was skipped or rejected
+- `timeMillis` - time used by the solution in milliseconds; for TL it is capped by the time limit (present only for OK/WA/PE/TL/ML/IL/RE)
+- `memoryBytes` - memory used by the solution in bytes (present only for OK/WA/PE/TL/ML/IL/RE)
+- `points` - raw points returned by the checker, not the points of the test or the group (may be absent)
+- `comment` - checker's or invoker's comment (may be absent)
+- `violateTag` - boolean - whether the run violates the solution's tag
 
 ### ValidatorTest
 Represents a validator's test for the problem.
